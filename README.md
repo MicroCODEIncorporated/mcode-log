@@ -276,6 +276,12 @@ Contributor's names and contact info...
 
 ## Version History
 
+* v0.5.9
+    - Moved common text arrays to Module Constants for speed.
+    - Removed 'var' usage
+    - Add param defaults to log(), exp(), trace(), expobj(), and resx() to improve robustness.
+    - Move all source '' strings from a comination of "" and '', using "" only where ' is embedded.
+    - Changed exception icon from 🟣  to 💀 , seems more appropriate and fun.
 * v0.5.8
     - Updated 'resx()' to support returning non-db entity results,
       to carry this common response code into our HTMX UI responses.

@@ -80,6 +80,9 @@
  *  22-Aug-2024   TJM-MCODE  {0014}   0.4.05 - corrected 'logify()' to accept all legal JSON Key names.
  *  19-Feb-2025   TJM-MCODE  {0015}   0.5.08 - updated 'resx()' to support returning non-db entity results,
  *                                             to carry this common response code into our HTMX UI responses.
+ *  21-Feb-2025   TJM-MCODE  {0016}   0.5.09 - optimized many functions, standardized on '' strings instead of a mix
+ *                                             of "" and '', now "" only used when embedded ' are needed.
+ *                                           - fixed an issues in 'logify*()' with string arrays where element had embedded ".
  *
  *
  *
@@ -115,29 +118,11 @@ const packageJson = require('./package.json');
 
 // MicroCODE: define this module's name for our 'mcode-log' package
 const MODULE_NAME = 'mcode-log.js';
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-// define local copy of 'getEnvVar()' for use before 'mcode' is loaded
-// this same function is available in 'mcode-env.js' but we need it here without that package
-
-/**
- * @function getEnvVar
- * @memberof mcode
- * @desc a private helper function that returns the value of an environment variable, or a default value if not found.
- * @param {any} key the name of the environment variable to get.
- * @param {any} defaultValue the default value to return if the environment variable is not found.
- * @returns {any} the value of the environment variable, or the default value if not found.
- */
-function getEnvVar(key, defaultValue)
-{
-    if (typeof process !== 'undefined' && process.env && key in process.env)
-    {
-        return process.env[key];
-    }
-    return defaultValue;
-};
-
-const theme = getEnvVar('THEME', 'dark'); // default to dark mode
-const mode = getEnvVar('NODE_ENV', 'development'); // default to development mode
+const theme = process.env.THEME || 'dark'; // default to dark mode
+const mode = process.env.NODE_ENV || 'development'; // default to development mode
 
 /**
  * @namespace mcode
@@ -203,62 +188,62 @@ const mcode = {
         notice: "This is a test string for logifying 'mcode' as an object during testing.",
 
         // common effects, predefined ANSI escape sequences
-        reset: "\x1b[0m",
-        bold: "\x1b[1m",
-        bright: "\x1b[1m",
-        dim: "\x1b[2m",
-        faint: "\x1b[2m",
-        italic: "\x1b[3m",
-        underscore: "\x1b[4m",
-        underline: "\x1b[4m",
-        blink: "\x1b[5m",
-        blink_slow: "\x1b[5m",
-        blink_fast: "\x1b[6m",
-        reverse: "\x1b[7m",
-        hidden: "\x1b[8m",
-        conceal: "\x1b[8m",
-        strikethru: "\x1b[9m",
-        crossed_out: "\x1b[9m",
+        reset: '\x1b[0m',
+        bold: '\x1b[1m',
+        bright: '\x1b[1m',
+        dim: '\x1b[2m',
+        faint: '\x1b[2m',
+        italic: '\x1b[3m',
+        underscore: '\x1b[4m',
+        underline: '\x1b[4m',
+        blink: '\x1b[5m',
+        blink_slow: '\x1b[5m',
+        blink_fast: '\x1b[6m',
+        reverse: '\x1b[7m',
+        hidden: '\x1b[8m',
+        conceal: '\x1b[8m',
+        strikethru: '\x1b[9m',
+        crossed_out: '\x1b[9m',
 
         // foreground colors
         fg: {
-            black: "\x1b[30m",
-            red: "\x1b[31m",
-            green: "\x1b[32m",
-            yellow: "\x1b[33m",
-            blue: "\x1b[34m",
-            magenta: "\x1b[35m",
-            cyan: "\x1b[36m",
-            white: "\x1b[37m",
+            black: '\x1b[30m',
+            red: '\x1b[31m',
+            green: '\x1b[32m',
+            yellow: '\x1b[33m',
+            blue: '\x1b[34m',
+            magenta: '\x1b[35m',
+            cyan: '\x1b[36m',
+            white: '\x1b[37m',
         },
 
         // background colors
         bg: {
-            black: "\x1b[40m",
-            red: "\x1b[41m",
-            green: "\x1b[42m",
-            yellow: "\x1b[43m",
-            blue: "\x1b[44m",
-            magenta: "\x1b[45m",
-            cyan: "\x1b[46m",
-            white: "\x1b[47m",
+            black: '\x1b[40m',
+            red: '\x1b[41m',
+            green: '\x1b[42m',
+            yellow: '\x1b[43m',
+            blue: '\x1b[44m',
+            magenta: '\x1b[45m',
+            cyan: '\x1b[46m',
+            white: '\x1b[47m',
         },
 
         // colors for event severity:   dark        light
-        gray: (theme === 'dark') ? "\x1b[90m" : "\x1b[30m",  // gray
-        errr: (theme === 'dark') ? "\x1b[91m" : "\x1b[31m",  // red
-        good: (theme === 'dark') ? "\x1b[92m" : "\x1b[32m",  // green
-        warn: (theme === 'dark') ? "\x1b[93m" : "\x1b[33m",  // yellow
-        cold: (theme === 'dark') ? "\x1b[94m" : "\x1b[34m",  // blue
-        dead: (theme === 'dark') ? "\x1b[95m" : "\x1b[35m",  // magenta
-        code: (theme === 'dark') ? "\x1b[96m" : "\x1b[36m",  // cyan
-        info: (theme === 'dark') ? "\x1b[97m" : "\x1b[37m",  // white
-        dbug: (theme === 'dark') ? "\x1b[97m" : "\x1b[37m",  // white
+        gray: (theme === 'dark') ? '\x1b[90m' : '\x1b[30m',  // gray
+        errr: (theme === 'dark') ? '\x1b[91m' : '\x1b[31m',  // red
+        good: (theme === 'dark') ? '\x1b[92m' : '\x1b[32m',  // green
+        warn: (theme === 'dark') ? '\x1b[93m' : '\x1b[33m',  // yellow
+        cold: (theme === 'dark') ? '\x1b[94m' : '\x1b[34m',  // blue
+        dead: (theme === 'dark') ? '\x1b[95m' : '\x1b[35m',  // magenta
+        code: (theme === 'dark') ? '\x1b[96m' : '\x1b[36m',  // cyan
+        info: (theme === 'dark') ? '\x1b[97m' : '\x1b[37m',  // white
+        dbug: (theme === 'dark') ? '\x1b[97m' : '\x1b[37m',  // white
 
         // custom JSON colors -- see 'logify()' for use
-        key: "\x1b[96m",  // key name - CYAN
-        value: "\x1b[93m",  // number, boolean, null - YELLOW
-        string: "\x1b[94m",  // string value - BLUE
+        key: '\x1b[96m',  // key name - CYAN
+        value: '\x1b[93m',  // number, boolean, null - YELLOW
+        string: '\x1b[94m',  // string value - BLUE
     },
 
     /**
@@ -270,26 +255,24 @@ const mcode = {
      * @param {string} source where the message orginated.
      * @param {string} severity Event.Severity: 'info', 'warn', 'error', 'exception', and 'success'.
      * @param {string} error [Optional] error message from another source.
-     * @returns {string} "{severity}: {message}" for display in UI.
+     * @returns {string} '{severity}: {message}' for display in UI.
      *
      * @example
      *      mcode.log('This is a test message.', 'myModule', 'info');
      *      mcode.log('object', object, 'myModule);
      */
-    log: function (message, source, severity = 'debug', error = null)
+    log: function (message = '<no message>', source = '<unknown.js>', severity = 'debug', error = null)
     {
-        // if 'source' is not a string containing ".js" or ".ts", log it as an object...
+        // if 'source' is not a string containing '.js' or '.ts', log it as an object...
         if (!data.isString(source) || (!source.includes('.js') && !source.includes('.ts')))
         {
             return mcode.logobj(message, source, severity);
         }
 
         let vt = mcode.vt;
-        let entry1 = "";
-        let entry2 = "";
-        let entry3 = "";
+        let logText = [];  // build the response as an array for speed
         let status = `${severity}: ${message}`;
-        let logifiedMessage = "";
+        let logifiedMessage = '';
 
         // do not log 'debug' messages in staging or production mode - {0008}
         if ((severity === 'debug') && (mode === 'production'))
@@ -312,15 +295,15 @@ const mcode = {
         }
         else if (data.isObject(message))
         {
-            logifiedMessage = "\n" + mcode.logify(mcode.logifyObject(message));
+            logifiedMessage = '\n' + mcode.logify(mcode.logifyObject(message));
         }
         else if (data.isJson(message))
         {
-            logifiedMessage = "\n" + mcode.logify(mcode.logifyObject(message));
+            logifiedMessage = '\n' + mcode.logify(mcode.logifyObject(message));
         }
         else if (data.isFunction(message))
         {
-            logifiedMessage = "\n" + `${message}`;
+            logifiedMessage = '\n' + `${message}`;
         }
         else
         {
@@ -332,7 +315,7 @@ const mcode = {
         let sevColor = vt.reset;
         let sevText = severity;
 
-        entry1 += (vt.reset + vt.dim + '++\n' + vt.reset + vt.dim);
+        logText.push(`${vt.reset}${vt.dim}++\n${vt.reset}${vt.dim}`);
 
         switch (severity)
         {
@@ -341,7 +324,7 @@ const mcode = {
             case 'info':
                 sevText = 'info';
                 sevColor += vt.info;
-                entry1 += ` i ｢mcode｣: 📣 ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`;
+                logText.push(` i ｢mcode｣: 📣 ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
                 break;
             case 'w':
             case 'wrn':
@@ -349,14 +332,14 @@ const mcode = {
             case 'warning':
                 sevText = 'warn';
                 sevColor += vt.warn;
-                entry1 += ` ! ｢mcode｣: ⚠️ ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`;
+                logText.push(` ! ｢mcode｣: ⚠️ ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
                 break;
             case 'e':
             case 'err':
             case 'error':
                 sevText = 'error';
                 sevColor += vt.errr;
-                entry1 += ` x ｢mcode｣: ⛔ ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`;
+                logText.push(` x ｢mcode｣: ⛔ ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
                 break;
             case 'x':
             case 'exp':
@@ -364,7 +347,7 @@ const mcode = {
             case 'exception':
                 sevText = 'exception';
                 sevColor += vt.dead;
-                entry1 += ` * ｢mcode｣: 🟣 ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`;
+                logText.push(` * ｢mcode｣: 💀 ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
                 break;
             case 's':
             case 'ack':
@@ -372,23 +355,23 @@ const mcode = {
             case 'success':
                 sevText = 'success';
                 sevColor += vt.good;
-                entry1 += ` ✓ ｢mcode｣: ✅ ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`;
+                logText.push(` ✓ ｢mcode｣: ✅ ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
                 break;
             case 'd':
             case 'dbg':
             case 'debug':
                 sevText = 'debug';
                 sevColor += vt.dbug;
-                entry1 += ` µ ｢mcode｣: 🔍 ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`;
+                logText.push(` µ ｢mcode｣: 🔍 ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
                 break;
             case '?':
             default:
                 sevText = 'undefined';
                 sevColor += vt.code;
-                entry1 += ` ? ｢mcode｣: ❓ ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`;
+                logText.push(` ? ｢mcode｣: ❓ ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
                 break;
         }
-        entry1 += '\n';
+        logText.push('\n');
 
         let logifiedError = false;
         if (error)
@@ -412,16 +395,15 @@ const mcode = {
         {
             logifiedError = mcode.colorizeLines(logifiedError, sevColor);
 
-            entry2 += `${vt.reset}${vt.dim}     error: ${vt.reset}${sevColor}${mcode.colorizeLines(mcode.simplify(logifiedError), sevColor)}\n`;
+            logText.push(`${vt.reset}${vt.dim}     error: ${vt.reset}${sevColor}${mcode.colorizeLines(mcode.simplify(logifiedError), sevColor)}\n`);
         }
 
-        entry3 +=
-            `${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}` +
-            `${vt.reset}${vt.dim}      from: ${vt.reset}${source}` +
-            `${vt.reset}${vt.dim}  severity: ${vt.reset}${sevColor}${sevText}${vt.reset}\n` +
-            `${vt.reset}${vt.dim}--${vt.reset}`;
+        logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
+        logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${source}`);
+        logText.push(`${vt.reset}${vt.dim}  severity: ${vt.reset}${sevColor}${sevText}${vt.reset}\n`);
+        logText.push(`${vt.reset}${vt.dim}--${vt.reset}`);
 
-        console.log(entry1 + entry2 + entry3);
+        console.log(logText.join(''));
 
         return status;  // for caller to use as needed
     },
@@ -439,13 +421,11 @@ const mcode = {
      *            mcode.logobj('myObject', myObject, 'myModule');
      *            mcode.obj('myObject', myObject, 'myModule');
      */
-    logobj: function (objName, obj, source = "<undefined>.js")
+    logobj: function (objName, obj, source = '<undefined>.js')
     {
         let vt = mcode.vt;
-        let entry1 = "";
-        let entry2 = "";
-        let entry3 = "";
-        let logifiedMessage = "";
+        let logText = [];  // build the response as an array for speed
+        let logifiedMessage = '';
 
         // flatten the message object to strings for logging...
         if (data.isArray(obj))
@@ -479,16 +459,14 @@ const mcode = {
         let sevText = 'info';
         sevColor += vt.info;
 
-        entry1 +=
-            `${vt.reset}${vt.dim}++\n` +
-            `${vt.reset}${vt.dim} i ｢mcode｣: 📣 ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'\n`;
-        entry3 +=
-            `${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}` +
-            `${vt.reset}${vt.dim}      from: ${vt.reset}${source}` +
-            `${vt.reset}${vt.dim}  severity: ${vt.reset}${sevColor}${sevText}${vt.reset}\n` +
-            `${vt.reset}${vt.dim}--${vt.reset}`;
+        logText.push(`${vt.reset}${vt.dim}++\n`);
+        logText.push(`${vt.reset}${vt.dim} i ｢mcode｣: 📣 ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'\n`);
+        logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
+        logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${source}`);
+        logText.push(`${vt.reset}${vt.dim}  severity: ${vt.reset}${sevColor}${sevText}${vt.reset}\n`);
+        logText.push(`${vt.reset}${vt.dim}--${vt.reset}`);
 
-        console.log(entry1 + entry2 + entry3);
+        console.log(logText.join(''));
     },
 
     // convenient abbreviations of all the logged severities...
@@ -520,32 +498,30 @@ const mcode = {
      * @param {string} source where the message orginated.
      * @param {string} exception the underlying exception object/trace that was caught.
      * @param {string} exptrace the underlying exception object/trace that was caught... if 'source' is an object to log.
-     * @returns {string} "message: {message} - exception: {exception}" for display in UI.
+     * @returns {string} 'message: {message} - exception: {exception}' for display in UI.
      */
-    exp: function (message, source, exception, exptrace = {})
+    exp: function (message = '<no message>', source = '<unknown.js>', exception = {}, exptrace = {})
     {
-        // if 'source' is not a string containing ".js" or ".ts" (or an API Route), log it as an object...
+        // if 'source' is not a string containing '.js' or '.ts' (or an API Route), log it as an object...
         if (!data.isString(source) || (!source.includes('.js') && !source.includes('.ts') && !source.includes(`/`)))
         {
             return mcode.expobj(message, source, exception, exptrace);
         }
 
         let vt = mcode.vt;
-        let entry1 = "";
-        let entry2 = "";
-        let entry3 = "";
-        let logifiedMessage = "";
-        let logifiedException = "";
+        let logText = [];  // build the response as an array for speed
+        let logifiedMessage = '';
+        let logifiedException = '';
         let isExpObject = false;
 
         // flatten the message object to strings for logging...
         if (data.isObject(message))
         {
-            logifiedMessage = "\n" + mcode.logify(mcode.logifyObject(message));
+            logifiedMessage = '\n' + mcode.logify(mcode.logifyObject(message));
         }
         else if (data.isJson(message))
         {
-            logifiedMessage = "\n" + mcode.logify(mcode.logifyObject(message));
+            logifiedMessage = '\n' + mcode.logify(mcode.logifyObject(message));
         }
         else
         {
@@ -596,35 +572,31 @@ const mcode = {
 
         if (isExpObject)
         {
-            entry1 +=
-                `${vt.reset}${vt.dim}++\n` +
-                `${vt.reset}${vt.dim} * ｢mcode｣: 🟣 ${sevColor}[${appModule}] '${logifiedMessage}'\n` +
-                `${vt.reset}${vt.dim}${sevColor} exception:\n`;
-            entry2 += logifiedException + `\n`;
-            entry3 +=
-                `${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}` +
-                `${vt.reset}${vt.dim}      from: ${vt.reset}${source}` +
-                `${vt.reset}${vt.dim}  severity: ${sevColor}exception w/stack${vt.reset}\n` +
-                `${vt.reset}${vt.dim}--${vt.reset}`;
+            logText.push(`${vt.reset}${vt.dim}++\n`);
+            logText.push(`${vt.reset}${vt.dim} * ｢mcode｣: 💀 ${sevColor}[${appModule}] '${logifiedMessage}'\n`);
+            logText.push(`${vt.reset}${vt.dim}${sevColor} exception:\n`);
+            logText.push(logifiedException + `\n`);
+            logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
+            logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${source}`);
+            logText.push(`${vt.reset}${vt.dim}  severity: ${sevColor}exception w/stack${vt.reset}\n`);
+            logText.push(`${vt.reset}${vt.dim}--${vt.reset}`);
 
-            console.log(entry1 + entry2 + entry3);
+            console.log(logText.join(''));
 
             return `${message} ${exception}`;  // for caller to return
         }
         else
         {
-            entry1 +=
-                `${vt.reset}${vt.dim}++\n` +
-                `${vt.reset}${vt.dim} * ｢mcode｣: 🟣 ${sevColor}[${appModule}] '${logifiedMessage}'\n` +
-                `${vt.reset}${vt.dim}${sevColor}${loggedException}${vt.gray}\n`;
-            entry2 += mcode.colorizeLines(`call stack: ${new Error().stack}\n`, vt.gray);
-            entry3 +=
-                `${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}` +
-                `${vt.reset}${vt.dim}      from: ${vt.reset}${source}` +
-                `${vt.reset}${vt.dim}  severity: ${sevColor}exception w/trace${vt.reset}\n` +
-                `${vt.reset}${vt.dim}--${vt.reset}`;
+            logText.push(`${vt.reset}${vt.dim}++\n`);
+            logText.push(`${vt.reset}${vt.dim} * ｢mcode｣: 💀 ${sevColor}[${appModule}] '${logifiedMessage}'\n`);
+            logText.push(`${vt.reset}${vt.dim}${sevColor}${loggedException}${vt.gray}\n`);
+            logText.push(mcode.colorizeLines(`call stack: ${new Error().stack}\n`, vt.gray));
+            logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
+            logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${source}`);
+            logText.push(`${vt.reset}${vt.dim}  severity: ${sevColor}exception w/trace${vt.reset}\n`);
+            logText.push(`${vt.reset}${vt.dim}--${vt.reset}`);
 
-            console.log(entry1 + entry2 + entry3);
+            console.log(logText.join(''));
 
             return `${message} ${exception}`;  // for caller to return
         }
@@ -639,18 +611,16 @@ const mcode = {
      * @param {object} obj javaScript Object to log.
      * @param {string} source where the Object orginated.
      * @param {string} exception the underlying exception message that was caught.
-     * @returns {string} "message: {message} - exception: {exception}" for display in UI.
+     * @returns {string} 'message: {message} - exception: {exception}' for display in UI.
      *
      * @example
      *            mcode.expobj('myObject', myObject, 'myModule', err);  // from within a 'catch (err)' block
      */
-    expobj: function (objName, obj, source, exception)
+    expobj: function (objName = '<no name>', obj = {}, source = '<unknown.js>', exception = {})
     {
         let vt = mcode.vt;
-        let entry1 = "";
-        let entry2 = "";
-        let entry3 = "";
-        var logifiedMessage = "";
+        let logText = [];  // build the response as an array for speed
+        let logifiedMessage = '';
 
         // flatten the message object to strings for logging...
         if (data.isArray(obj))
@@ -719,35 +689,31 @@ const mcode = {
 
         if (isExpObject)
         {
-            entry1 +=
-                `${vt.reset}${vt.dim}++\n` +
-                `${vt.reset}${vt.dim} * ｢mcode｣: 🟣 ${sevColor}[${appModule}] '${logifiedMessage}'\n` +
-                `${vt.reset}${vt.dim}${sevColor}exception:\n`;
-            entry2 += `${vt.reset}` + logifiedException + `\n`;
-            entry3 +=
-                `${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}` +
-                `${vt.reset}${vt.dim}      from: ${vt.reset}${source}` +
-                `${vt.reset}${vt.dim}  severity: ${sevColor}exception w/stack${vt.reset}\n` +
-                `${vt.reset}${vt.dim}--${vt.reset}`;
+            logText.push(`${vt.reset}${vt.dim}++\n`);
+            logText.push(`${vt.reset}${vt.dim} * ｢mcode｣: 🟣 ${sevColor}[${appModule}] '${logifiedMessage}'\n`);
+            logText.push(`${vt.reset}${vt.dim}${sevColor}exception:\n`);
+            logText.push(`${vt.reset}` + logifiedException + `\n`);
+            logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
+            logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${source}`);
+            logText.push(`${vt.reset}${vt.dim}  severity: ${sevColor}exception w/stack${vt.reset}\n`);
+            logText.push(`${vt.reset}${vt.dim}--${vt.reset}`);
 
-            console.log(entry1 + entry2 + entry3);
+            console.log(logText.join(''));
 
             return `Object: ${objName} ${exception}`;  // for caller to return
         }
         else
         {
-            entry1 +=
-                `${vt.reset}${vt.dim}++\n` +
-                `${vt.reset}${vt.dim} * ｢mcode｣: 🟣 ${sevColor}[${appModule}] '${logifiedMessage}'\n` +
-                `${vt.reset}${vt.dim}${sevColor}${loggedException}${vt.gray}\n`;
-            entry2 += mcode.colorizeLines(`call stack: ${new Error().stack}\n`, vt.gray);
-            entry3 +=
-                `${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}` +
-                `${vt.reset}${vt.dim}      from: ${vt.reset}${source}` +
-                `${vt.reset}${vt.dim}  severity: ${sevColor}exception w/trace${vt.reset}\n` +
-                `${vt.reset}${vt.dim}--${vt.reset}`;
+            logText.push(`${vt.reset}${vt.dim}++\n`);
+            logText.push(`${vt.reset}${vt.dim} * ｢mcode｣: 🟣 ${sevColor}[${appModule}] '${logifiedMessage}'\n`);
+            logText.push(`${vt.reset}${vt.dim}${sevColor}${loggedException}${vt.gray}\n`);
+            logText.push(mcode.colorizeLines(`call stack: ${new Error().stack}\n`, vt.gray));
+            logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
+            logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${source}`);
+            logText.push(`${vt.reset}${vt.dim}  severity: ${sevColor}exception w/trace${vt.reset}\n`);
+            logText.push(`${vt.reset}${vt.dim}--${vt.reset}`);
 
-            console.log(entry1 + entry2 + entry3);
+            console.log(logText.join(''));
 
             return `Object: ${objName} ${exception}`;  // for caller to return
         }
@@ -761,25 +727,25 @@ const mcode = {
      * @param {object} res the response object.
      * @param {string} action the action that was being performed.
      * @param {object} response the response: {status, message, data, error}.
-     * @param {string} moduleName where the message orginated.
+     * @param {string} source where the message orginated.
      * @returns {object} the response object.
      */
-    resx: function (res, action, response, moduleName)
+    resx: function (res = {}, action = 'none', response = {}, source = '<unknown.js>')
     {
         // example   DB Entity: READ [200] OK,  Entity: 'user' _id: nnnn-nnnn-nnnn-nnnn  or  Array: (n)
         // example HTML Result: READ [200] OK,  Endpoint: 'account.settings'
-        const id = response?.id || response?.data?.id || '';
-        const entity = response?.entity;
-        const endpoint = response?.endpoint || `<unknown>`;
-        const status = response?.status || 0;
-        const countId = data.isArray(response?.data) ? `Array: (${response?.data.length})` : (id != '') ? `id: '${id}'` : ``;
+        const id = response.id || response.data?.id || '';
+        const entity = response.entity;
+        const endpoint = response.endpoint || `<unknown>`;
+        const status = response.status || 0;
+        const countId = data.isArray(response.data) ? `Array: (${response.data.length})` : (id != '') ? `id: '${id}'` : ``;
         const caller = (entity) ? `Entity: '${entity}' ${countId}` : `Endpoint: '${endpoint}'`;
-        const message = `${action?.toUpperCase()} ${data.httpStatus(status)},  ${caller}`;
+        const message = `${action.toUpperCase()} ${data.httpStatus(status)},  ${caller}`;
 
         if (response.error)
         {
             // returning an error in the response...
-            this.exp(message, moduleName, response.error);
+            this.exp(message, source, response.error);
             return res.status(response.status).send({message: message, error: response.error});
         }
         if (response.data)
@@ -787,19 +753,19 @@ const mcode = {
             if (entity)
             {
                 // returning Entity data in the response...
-                this.log(message, moduleName, 'info');
+                this.log(message, source, 'info');
                 return res.status(response.status).send({message: message, data: response.data});
             }
             else
             {
                 // returning a direct Endpoint *result*, like HTML/HTMX - {0015}
-                this.log(message, moduleName, 'info');
+                this.log(message, source, 'info');
                 return res.status(response.status).send(response.data);
             }
         }
 
         // returning generic response...
-        this.log(message, moduleName, 'dbug');
+        this.log(message, source, 'dbug');
         return res.status(response.status).send({message: message});
     },
 
@@ -812,22 +778,20 @@ const mcode = {
      * @param {string} source where the message orginated.
      * @returns nothing.
      */
-    trace: function (message, source)
+    trace: function (message = '<no message>', source = '<unknown.js>')
     {
         let vt = mcode.vt;
-        let entry1 = "";
-        let entry2 = "";
-        let entry3 = "";
-        let logifiedMessage = "";
+        let logText = [];  // build the response as an array for speed
+        let logifiedMessage = '';
 
         // flatten the message object to strings for logging...
         if (data.isObject(message))
         {
-            logifiedMessage = "\n" + mcode.logify(mcode.logifyObject(message));
+            logifiedMessage = '\n' + mcode.logify(mcode.logifyObject(message));
         }
         else if (data.isJson(message))
         {
-            logifiedMessage = "\n" + mcode.logify(mcode.logifyObject(message));
+            logifiedMessage = '\n' + mcode.logify(mcode.logifyObject(message));
         }
         else
         {
@@ -836,21 +800,18 @@ const mcode = {
 
         const appModule = source.split(/[\.,:;!?\s]+/)[0].toUpperCase();
 
-        let sevColor = vt.reset;
-        sevColor += vt.code;
+        let sevColor = vt.reset + vt.code;
 
         // Function calls are always logged as 'Info'
-        entry1 +=
-            `${vt.reset}${vt.dim}++\n` +
-            `${vt.reset}${vt.dim} µ ｢mcode｣: 🔍 ${sevColor}[${appModule}] '${logifiedMessage}'${vt.reset}${vt.gray}\n`;
-        entry2 += mcode.colorizeLines(`call stack: ${new Error().stack}\n`, vt.gray);
-        entry3 +=
-            `${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}` +
-            `${vt.reset}${vt.dim}      from: ${vt.reset}${source}` +
-            `${vt.reset}${vt.dim}  severity: ${sevColor}trace${vt.reset}\n` +
-            `${vt.reset}${vt.dim}--${vt.reset}`;
+        logText.push(`${vt.reset}${vt.dim}++\n`);
+        logText.push(`${vt.reset}${vt.dim} µ ｢mcode｣: 🔍 ${sevColor}[${appModule}] '${logifiedMessage}'${vt.reset}${vt.gray}\n`);
+        logText.push(mcode.colorizeLines(`call stack: ${new Error().stack}\n`, vt.gray));
+        logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
+        logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${source}`);
+        logText.push(`${vt.reset}${vt.dim}  severity: ${sevColor}trace${vt.reset}\n`);
+        logText.push(`${vt.reset}${vt.dim}--${vt.reset}`);
 
-        console.log(entry1 + entry2 + entry3);
+        console.log(logText.join(''));
     },
 
     /**
@@ -865,7 +826,7 @@ const mcode = {
     {
         if (data.isUndefined(object))
         {
-            return "undefined";
+            return 'undefined';
         }
 
         // flatten the message object to strings for logging...
@@ -876,7 +837,7 @@ const mcode = {
             object = JSON.stringify(object);
         }
 
-        let simplifiedText = "";
+        let simplifiedText = '';
         let inValue = false;
         let inEscape = false;
         let c = ' ';
@@ -979,7 +940,7 @@ const mcode = {
         let inString = false;  // handle "quoted strings" as-is
         let inLiteral = false;  // take internal text as-is
 
-        let logifiedText = '';  // the text we build
+        let logText = [];  // build the response as an array for speed
         let tabStop = 0;  // indent level for formatting
         let lineEmpty = true;  // controls indent() output
 
@@ -1092,15 +1053,15 @@ const mcode = {
             if (textToLogify.substring(i, i + 2) === '\\\\')
             {
                 // take backslash as-is
-                logifiedText += cc;
-                logifiedText += cc;
+                logText.push(cc);
+                logText.push(cc);
                 i++; // skip the next '\'
                 continue;
             }
 
             if (!inString && textToLogify.substring(i, i + 2) === '\\n')
             {
-                logifiedText += '' + indent();
+                logText.push(indent());
                 lineEmpty = false;
                 i++; // skip the 'n'
                 continue;
@@ -1108,7 +1069,7 @@ const mcode = {
 
             if (inLiteral)
             {
-                logifiedText += cc;
+                logText.push(cc);
                 if (cc === '}')
                 {
                     inLiteral = false;
@@ -1119,7 +1080,7 @@ const mcode = {
             if (textToLogify.substring(i, i + 2) === '${')
             {
                 inLiteral = true;
-                logifiedText += cc;
+                logText.push(cc);
                 continue;
             }
 
@@ -1139,7 +1100,7 @@ const mcode = {
                 }
                 else
                 {
-                    logifiedText += cc;
+                    logText.push(cc);
                 }
                 continue;
             }
@@ -1151,13 +1112,13 @@ const mcode = {
                     inString = false;
                     cc = '\"' + `${mcode.vt.reset}`;
                 }
-                logifiedText += cc;
+                logText.push(cc);
                 continue;
             }
 
             if (!inJson)
             {
-                logifiedText += cc;
+                logText.push(cc);
                 lineEmpty = false;
                 continue;
             }
@@ -1165,39 +1126,39 @@ const mcode = {
             switch (cc)
             {
                 case '{':
-                    logifiedText += indent() + '{';
+                    logText.push(indent() + '{');
                     lineEmpty = false;
                     tabStop++;
-                    logifiedText += '' + indent();
+                    logText.push(indent());
                     break;
                 case '[':
-                    logifiedText += indent() + '[';
+                    logText.push(indent() + '[');
                     lineEmpty = false;
                     tabStop++;
-                    logifiedText += '' + indent();
+                    logText.push(indent());
                     break;
                 case '}':
                     tabStop--;
-                    logifiedText += indent() + '}';
+                    logText.push(indent() + '}');
                     lineEmpty = false;
                     inJson = tabStop > 0;
                     break;
                 case ']':
                     tabStop--;
-                    logifiedText += indent() + ']';
+                    logText.push(indent() + ']');
                     lineEmpty = false;
                     break;
                 case ',':
-                    logifiedText += `${mcode.vt.reset}` + ',' + indent();
+                    logText.push(`${mcode.vt.reset}` + ',' + indent());
                     lineEmpty = false;
                     break;
                 case ':':
-                    logifiedText += ': ' + `${mcode.vt.value}`;
+                    logText.push(': ' + `${mcode.vt.value}`);
                     lineEmpty = false;
                     break;
                 case '"':
-                    logifiedText += `${mcode.vt.string}`;
-                    logifiedText += '\"';
+                    logText.push(`${mcode.vt.string}`);
+                    logText.push('\"');
                     lineEmpty = false;
                     inString = true;
                     break;
@@ -1208,14 +1169,14 @@ const mcode = {
                     if (isKeyChar(cc))
                     {
                         inValue = true;  // true, false, null, or number
-                        logifiedText += cc;
+                        logText.push(cc);
                         lineEmpty = false;
                     }
                     break;
             }
         }
 
-        return logifiedText;
+        return logText.join('');
     },
 
     /**
@@ -1248,15 +1209,15 @@ const mcode = {
             if (typeof value === 'string')
             {
                 // detect JSON objects that have been escaped and convert them back to JSON
-                if (value.startsWith(`{`)
-                    && value.endsWith(`}`))
+                if (value.startsWith(`{`) && value.endsWith(`}`))
                 {
                     // convert to JSON representation
-                    return value.replace('\\"', '"');
+                    return value.replaceAll('\\"', '"');
                 }
                 else
                 {
-                    return `"${value}"`;
+                    // standardize text for enclosing "s.
+                    return `"${value.replaceAll(`"`, `'`)}"`;
                 }
             }
             if (typeof value === 'function')
@@ -1284,7 +1245,7 @@ const mcode = {
                 return '"<undefined>"';
             }
 
-            return "<unknown>";
+            return '<unknown>';
         };
 
         // ƒ to recursively stringify an object
@@ -1329,7 +1290,7 @@ const mcode = {
             if (Array.isArray(currentObject))
             {
                 // ƒ to handle array members
-                result = currentObject.map((item) => recursiveStringify(item)).join(",");
+                result = currentObject.map((item) => recursiveStringify(item)).join(',');
 
                 parentObjects.pop();
 
@@ -1353,7 +1314,7 @@ const mcode = {
 
                     return `"${key}":${recursiveStringify(value)}`;
 
-                }).filter(Boolean).join(",");
+                }).filter(Boolean).join(',');
 
                 parentObjects.pop();
 
@@ -1376,17 +1337,17 @@ const mcode = {
      */
     listifyObject: function (objectToListify, outputType = 'html')
     {
-        let listifiedText = "";
-        var keyIndex = 0;
+        let listifiedText = '';
+        let keyIndex = 0;
 
         if (outputType === 'jsx')
         {
-            listifiedText += '<ul className="list-group">';
+            listifiedText += "<ul className='list-group'>";
 
             Object.entries(objectToListify).forEach(([key, value]) =>
             {
                 // ƒ to convert array element to text, simplify for display, and add to LIST...
-                listifiedText += `<li className="list-group-item" key="${keyIndex++}">${key}: ${value}</li>`;
+                listifiedText += `<li className='list-group-item' key='${keyIndex++}'>${key}: ${value}</li>`;
             });
 
             listifiedText += '</ul>';
@@ -1396,7 +1357,7 @@ const mcode = {
             Object.entries(objectToListify).forEach(([key, value]) =>
             {
                 // ƒ to convert array element to text, simplify for display, and add to LIST...
-                listifiedText += `<li className="list-group-item" key="${keyIndex++}">${key}: ${value}</li>`;
+                listifiedText += `<li className='list-group-item' key='${keyIndex++}'>${key}: ${value}</li>`;
             });
         }
 
@@ -1414,31 +1375,31 @@ const mcode = {
      */
     listifyArray: function (arrayToListify, outputType = 'html')
     {
-        let listifiedText = "";
-        var keyIndex = 0;
+        let listText = [];
+        let keyIndex = 0;
 
         if (outputType === 'jsx')
         {
-            listifiedText += '<ul className="list-group">';
+            listText.push(`<ul className='list-group'>`);
 
             arrayToListify.forEach(element =>
             {
                 // ƒ to convert array element to text, simplify for display, and add to LIST...
-                listifiedText += `<li className="list-group-item" key="${keyIndex++}">${mcode.simplifyObject(element)}</li>`;
+                listText.push(`<li className='list-group-item' key='${keyIndex++}'>${mcode.simplifyObject(element)}</li>`);
             });
 
-            listifiedText += '</ul>';
+            listText.push('</ul>');
         }
         else
         {
             arrayToListify.forEach(element =>
             {
                 // ƒ to convert array element to text, simplify for display, and add to LIST...
-                listifiedText += `<li class="list-group-item" key="${keyIndex++}">${mcode.simplifyObject(element)}</li>`;
+                listText.push(`<li class='list-group-item' key='${keyIndex++}'>${mcode.simplifyObject(element)}</li>`);
             });
         }
 
-        return listifiedText;
+        return listText.join('');
     },
 
     /**
@@ -1450,7 +1411,7 @@ const mcode = {
      * @param {string} vtColor the VT escape sequence to use for colorizing the lines.
      * @returns {string} the colorized string.
      * @example
-     *          mcode.colorizeLines('Hello, World!\nIThis is fun!', mcode.vt.red);  // returns: "\u001b[31mHello, World!\u001b[31mThis is fun!"
+     *          mcode.colorizeLines('Hello, World!\nThis is fun!', mcode.vt.red);  // returns: '\u001b[31mHello, World!\u001b[31mThis is fun!'
      */
     colorizeLines: function (inputLines, vtColor)
     {
@@ -1467,7 +1428,7 @@ const mcode = {
             lineArray[i] = `${currentColor}${lineArray[i]}`;
 
             // pick up the last color in the line we just added...
-            currentColor = lineArray[i].match(/\u001b\[\d+m/g).pop();
+            currentColor = lineArray[i].match(/\u001b\[\d+m/g)?.pop() || currentColor;
         }
 
         // Rejoin the colorized lines into a single string
@@ -1480,13 +1441,10 @@ const mcode = {
      * @desc Generates timestamp string: YYYY-MM-DD Day HH:MM:SS.mmm.
      * @api public
      * @param {boolean} local [Optional] determines whether or not local time is used, if not it returns use UTC.
-     * @returns {string} "YYYY-MM-DD Day HH:MM:SS.mmm UTC|Local".
+     * @returns {string} 'YYYY-MM-DD Day HH:MM:SS.mmm UTC|Local'.
      */
     timeStamp: function (now = new Date(), local = true)
     {
-        const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
         // ƒ to make sure all fields are fixed length with leading zeros
         const leadingZeros = (number, length) =>
         {
@@ -1500,9 +1458,9 @@ const mcode = {
 
         if (local)
         {
-            let dayofweek = weekdays[now.getDay()];           // 3-letter day of week
+            let dayofweek = WEEKDAYS[now.getDay()];           // 3-letter day of week
             let year = now.getFullYear();                     // 4-digit year
-            let month = months[now.getMonth()];               // 3-letter month of year
+            let month = MONTHS[now.getMonth()];               // 3-letter month of year
             let day = leadingZeros(now.getDate(), 2);         // 2-digit day
             let hours = leadingZeros(now.getHours(), 2);      // 2-digit hour
             let minutes = leadingZeros(now.getMinutes(), 2);  // 2-digit minute
@@ -1513,9 +1471,9 @@ const mcode = {
         }
         else
         {
-            let dayofweek = weekdays[now.getUTCDay()];           // 3-letter day of week
+            let dayofweek = WEEKDAYS[now.getUTCDay()];           // 3-letter day of week
             let year = now.getUTCFullYear();                     // 4-digit year
-            let month = months[now.getMonth()];                  // 3-letter month of year
+            let month = MONTHS[now.getMonth()];                  // 3-letter month of year
             let day = leadingZeros(now.getUTCDate(), 2);         // 2-digit day
             let hours = leadingZeros(now.getUTCHours(), 2);      // 2-digit hour
             let minutes = leadingZeros(now.getUTCMinutes(), 2);  // 2-digit minute
