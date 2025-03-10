@@ -1,17 +1,19 @@
 // #region  F I L E
 // <copyright file="mcode-log/index.js" company="MicroCODE Incorporated">Copyright © 2022-2024 MicroCODE, Inc. Troy, MI</copyright><author>Timothy J. McGuire</author>
 // #region  M O D U L E
-
 // #region  D O C U M E N T A T I O N
-/*
- *      Title:    MicroCODE Shared Function Library
- *      Module:   modules (node_modules/mcode-log/index.js)
+/**
  *      Project:  MicroCODE MERN Applications
- *      Customer: Internal+MIT xPRO Course
- *      Creator:  MicroCODE Incorporated
- *      Date:     January 2022-2024
- *      Author:   Timothy McGuire
+ *      Customer: Internal + MIT xPRO Course
+ *      @module   'mcode-log.js'
+ *      @memberof mcode
+ *      @created  January 2022-2024
+ *      @author   Timothy McGuire, MicroCODE, Inc.
+ *      @description >
+ *      MicroCODE Shared App Logging Library
  *
+ *      LICENSE:
+ *      --------
  *      MIT License: MicroCODE.mcode-log
  *
  *      Copyright (c) 2022-2024 Timothy McGuire, MicroCODE, Inc.
@@ -37,13 +39,11 @@
  *
  *      DESCRIPTION:
  *      ------------
- *
  *      This module implements the MicroCODE's Common JavaScript functions for logging and debugging.
  *
  *
  *      REFERENCES:
  *      -----------
- *
  *      1. MIT xPRO Course: Professional Certificate in Coding: Full Stack Development with MERN
  *
  *      2. List of ANSI Color Escape Sequences
@@ -57,33 +57,32 @@
  *
  *      MODIFICATIONS:
  *      --------------
+ *      Date:         By-Group:   Rev:    Description:
  *
- *  Date:         By-Group:   Rev:    Description:
- *
- *  27-Jan-2022   TJM-MCODE  {0001}   New module for common reusable Javascript logging functions.
- *  05-Mar-2022   TJM-MCODE  {0002}   Documentation updates.
- *  04-May-0222   TJM-MCODE  {0003}   Corrected 'month' in timeStamp.
- *  03-Oct-2022   TJM-MCODE  {0004}   Added 'log()' to simplify console logging of app events.
- *  03-Oct-2022   TJM-MCODE  {0005}   Added use of 'vt' for colorizing Console Log entries.
- *  16-Oct-2022   TJM-MCODE  {0006}   Added 'success' as a severity.
- *  30-Oct-2023   TJM-MCODE  {0007}   Updated to TypeScript, reversed to pure JavaScript in Jan 2024.
- *  03-Dec-2023   TJM-MCODE  {0008}   Don't log 'debug' messages in staging or production mode.
- *  21-Jan-2024   TJM-MCODE  {0009}   Converted to a single ES6 Module (ESM) for use in both
- *                                    Frontend/Client and Backend/Server as a NodeJS package.
- *  01-Feb-2024   TJM-MCODE  {0010}   Changed to the Universal Module Definition (UMD) pattern to support AMD,
- *                                    CommonJS/Node.js, and browser global in our exported module.
- *  02-Mar-2024   TJM-MCODE  {0011}   Added 'logobj()', 'expobj()', 'isFunction()', 'hexify()', 'octify()', and 'colorizeLines()'
- *                                    all in the pursuit of a more complete and consistent logging and debugging experience,
- *                                    in both the Console, NPM, and the Browser's DevTools.
- *  06-Jul-2024   TJM-MCODE  {0012}   0.4.00 - moved all 'data' functions into sub-package 'mcode-data'.
- *  22-Aug-2024   TJM-MCODE  {0013}   0.4.04 - corrected 'colorizeLines()' to carry on embedded colors to following lines.
- *  22-Aug-2024   TJM-MCODE  {0014}   0.4.05 - corrected 'logify()' to accept all legal JSON Key names.
- *  19-Feb-2025   TJM-MCODE  {0015}   0.5.08 - updated 'resx()' to support returning non-db entity results,
- *                                             to carry this common response code into our HTMX UI responses.
- *  21-Feb-2025   TJM-MCODE  {0016}   0.5.09 - optimized many functions, standardized on '' strings instead of a mix
- *                                             of "" and '', now "" only used when embedded ' are needed.
- *                                           - fixed an issues in 'logify*()' with string arrays where element had embedded ".
- *
+ *      27-Jan-2022   TJM-MCODE  {0001}   New module for common reusable Javascript logging functions.
+ *      05-Mar-2022   TJM-MCODE  {0002}   Documentation updates.
+ *      04-May-0222   TJM-MCODE  {0003}   Corrected 'month' in timeStamp.
+ *      03-Oct-2022   TJM-MCODE  {0004}   Added 'log()' to simplify console logging of app events.
+ *      03-Oct-2022   TJM-MCODE  {0005}   Added use of 'vt' for colorizing Console Log entries.
+ *      16-Oct-2022   TJM-MCODE  {0006}   Added 'success' as a severity.
+ *      30-Oct-2023   TJM-MCODE  {0007}   Updated to TypeScript, reversed to pure JavaScript in Jan 2024.
+ *      03-Dec-2023   TJM-MCODE  {0008}   Don't log 'debug' messages in staging or production mode.
+ *      21-Jan-2024   TJM-MCODE  {0009}   Converted to a single ES6 Module (ESM) for use in both
+ *                                        Frontend/Client and Backend/Server as a NodeJS package.
+ *      01-Feb-2024   TJM-MCODE  {0010}   Changed to the Universal Module Definition (UMD) pattern to support AMD,
+ *                                        CommonJS/Node.js, and browser global in our exported module.
+ *      02-Mar-2024   TJM-MCODE  {0011}   Added 'logobj()', 'expobj()', 'isFunction()', 'hexify()', 'octify()', and 'colorizeLines()'
+ *                                        all in the pursuit of a more complete and consistent logging and debugging experience,
+ *                                        in both the Console, NPM, and the Browser's DevTools.
+ *      06-Jul-2024   TJM-MCODE  {0012}   0.4.00 - moved all 'data' functions into sub-package 'mcode-data'.
+ *      22-Aug-2024   TJM-MCODE  {0013}   0.4.04 - corrected 'colorizeLines()' to carry on embedded colors to following lines.
+ *      22-Aug-2024   TJM-MCODE  {0014}   0.4.05 - corrected 'logify()' to accept all legal JSON Key names.
+ *      19-Feb-2025   TJM-MCODE  {0015}   0.5.08 - updated 'resx()' to support returning non-db entity results,
+ *                                                 to carry this common response code into our HTMX UI responses.
+ *      21-Feb-2025   TJM-MCODE  {0016}   0.5.09 - optimized many functions, standardized on '' strings instead of a mix
+ *                                                 of "" and '', now "" only used when embedded ' are needed.
+ *                                               - fixed an issues in 'logify*()' with string arrays where element had embedded ".
+ *      08-Mar-2025   TJM-MCODE  {0017}   0.5.10 - updated resx() handle HTTP Status 204 properly with '.end()'.
  *
  *
  *
@@ -274,7 +273,7 @@ const mcode = {
         let status = `${severity}: ${message}`;
         let logifiedMessage = '';
 
-        // do not log 'debug' messages in staging or production mode - {0008}
+        // do not log 'debug' messages in production mode - {0008}
         if ((severity === 'debug') && (mode === 'production'))
         {
             return status;
@@ -359,6 +358,7 @@ const mcode = {
                 break;
             case 'd':
             case 'dbg':
+            case 'dbug':
             case 'debug':
                 sevText = 'debug';
                 sevColor += vt.dbug;
@@ -764,8 +764,16 @@ const mcode = {
             }
         }
 
-        // returning generic response...
-        this.log(message, source, 'dbug');
+        // log the response... (NOTE: debug messages are not logged in production mode - {0008})
+        this.log(message, source, 'debug');
+
+        // handle 'No Content' (204) response - {0017}
+        if (response.status === 204)
+        {
+            return res.status(204).end();  // to end request without a body and prevent client retry
+        }
+
+        // all other responses...
         return res.status(response.status).send({message: message});
     },
 

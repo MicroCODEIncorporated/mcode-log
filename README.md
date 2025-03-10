@@ -276,18 +276,23 @@ Contributor's names and contact info...
 
 ## Version History
 
+* v0.6.0
+    - Added more standardized JSDoc module headers for inclusion in end-product documentation.
+    - Updated to mcode-data v0.6.0
+* v0.5.10
+    - Updated 'resx()' to handle 204 No Content responses.
 * v0.5.9
     - Moved common text arrays to Module Constants for speed.
     - Removed 'var' usage
     - Add param defaults to log(), exp(), trace(), expobj(), and resx() to improve robustness.
-    - Move all source '' strings from a comination of "" and '', using "" only where ' is embedded.
+    - Move all source '' strings from a combination of "" and '', using "" only where ' is embedded.
     - Changed exception icon from 🟣  to 💀 , seems more appropriate and fun.
 * v0.5.8
     - Updated 'resx()' to support returning non-db entity results,
       to carry this common response code into our HTMX UI responses.
 * v0.5.7
     - Changing remaining 🟪 to 🟣 for exception logging, missed in earlier change.
-    - Corrected cross-spawn  7.0.0 - 7.0.4; Severity: high; Regular Expression Denial of Service
+    - Corrected cross-spawn  v7.0.0 - 7.0.4; Severity: high; Regular Expression Denial of Service
 * v0.5.6
     - Remove an unwanted debug statement from resx().
 * v0.5.4 - v0.5.5
