@@ -281,6 +281,9 @@ Contributor's names and contact info...
 
 ## Version History
 
+* v0.6.4
+    - Moved all 'Severity Icons' out of 'dimmed' text and into 'bright' test of the message.
+    - Commonized some 'exception' icons I missed from 🟣  to 💀 .
 * v0.6.2, v0.6.3
     - Missed some locations logging from: 'source' instead of the new from: 'modLine()' function.
     - Updated file path logging to be 'relative' to make the path size reasonable, and relavant.

@@ -326,7 +326,7 @@ const mcode = {
             case 'info':
                 sevText = 'info';
                 sevColor += vt.info;
-                logText.push(` i ｢mcode｣: 📣  ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
+                logText.push(` i ｢mcode｣: ${sevColor}📣  [${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
                 break;
             case 'w':
             case 'wrn':
@@ -334,14 +334,14 @@ const mcode = {
             case 'warning':
                 sevText = 'warn';
                 sevColor += vt.warn;
-                logText.push(` ! ｢mcode｣: ⚠️  ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
+                logText.push(` ! ｢mcode｣: ${sevColor}⚠️  [${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
                 break;
             case 'e':
             case 'err':
             case 'error':
                 sevText = 'error';
                 sevColor += vt.errr;
-                logText.push(` x ｢mcode｣: ⛔  ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
+                logText.push(` x ｢mcode｣: ${sevColor}⛔  [${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
                 break;
             case 'x':
             case 'exp':
@@ -349,7 +349,7 @@ const mcode = {
             case 'exception':
                 sevText = 'exception';
                 sevColor += vt.dead;
-                logText.push(` * ｢mcode｣: 💀  ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
+                logText.push(` * ｢mcode｣: ${sevColor}💀  [${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
                 break;
             case 's':
             case 'ack':
@@ -357,7 +357,7 @@ const mcode = {
             case 'success':
                 sevText = 'success';
                 sevColor += vt.good;
-                logText.push(` ✓ ｢mcode｣: ✅  ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
+                logText.push(` ✓ ｢mcode｣: ${sevColor}✅  [${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
                 break;
             case 'd':
             case 'dbg':
@@ -365,13 +365,13 @@ const mcode = {
             case 'debug':
                 sevText = 'debug';
                 sevColor += vt.dbug;
-                logText.push(` µ ｢mcode｣: 🔍  ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
+                logText.push(` µ ｢mcode｣: ${sevColor}🔍  [${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
                 break;
             case '?':
             default:
                 sevText = 'undefined';
                 sevColor += vt.code;
-                logText.push(` ? ｢mcode｣: ❓  ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
+                logText.push(` ? ｢mcode｣: ${sevColor}❓  [${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
                 break;
         }
         logText.push('\n');
@@ -533,7 +533,7 @@ const mcode = {
         sevColor += vt.info;
 
         logText.push(`${vt.reset}${vt.dim}++\n`);
-        logText.push(`${vt.reset}${vt.dim} i ｢mcode｣: 📣 ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'\n`);
+        logText.push(`${vt.reset}${vt.dim} i ｢mcode｣: ${sevColor}📣  [${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'\n`);
         logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
         logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${this.moduleLine(source)}`);
         logText.push(`${vt.reset}${vt.dim}  severity: ${vt.reset}${sevColor}${sevText}${vt.reset}\n`);
@@ -646,7 +646,7 @@ const mcode = {
         if (isExpObject)
         {
             logText.push(`${vt.reset}${vt.dim}++\n`);
-            logText.push(`${vt.reset}${vt.dim} * ｢mcode｣: 💀 ${sevColor}[${appModule}] '${logifiedMessage}'\n`);
+            logText.push(`${vt.reset}${vt.dim} * ｢mcode｣: ${sevColor}💀  [${appModule}] '${logifiedMessage}'\n`);
             logText.push(`${vt.reset}${vt.dim}${sevColor} exception:\n`);
             logText.push(logifiedException + `\n`);
             logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
@@ -661,7 +661,7 @@ const mcode = {
         else
         {
             logText.push(`${vt.reset}${vt.dim}++\n`);
-            logText.push(`${vt.reset}${vt.dim} * ｢mcode｣: 💀 ${sevColor}[${appModule}] '${logifiedMessage}'\n`);
+            logText.push(`${vt.reset}${vt.dim} * ｢mcode｣: ${sevColor}💀  [${appModule}] '${logifiedMessage}'\n`);
             logText.push(`${vt.reset}${vt.dim}${sevColor}${loggedException}${vt.gray}\n`);
             logText.push(mcode.colorizeLines(`call stack: ${new Error().stack}\n`, vt.gray));
             logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
@@ -763,7 +763,7 @@ const mcode = {
         if (isExpObject)
         {
             logText.push(`${vt.reset}${vt.dim}++\n`);
-            logText.push(`${vt.reset}${vt.dim} * ｢mcode｣: 🟣 ${sevColor}[${appModule}] '${logifiedMessage}'\n`);
+            logText.push(`${vt.reset}${vt.dim} * ｢mcode｣: ${sevColor}💀  [${appModule}] '${logifiedMessage}'\n`);
             logText.push(`${vt.reset}${vt.dim}${sevColor}exception:\n`);
             logText.push(`${vt.reset}` + logifiedException + `\n`);
             logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
@@ -778,7 +778,7 @@ const mcode = {
         else
         {
             logText.push(`${vt.reset}${vt.dim}++\n`);
-            logText.push(`${vt.reset}${vt.dim} * ｢mcode｣: 🟣 ${sevColor}[${appModule}] '${logifiedMessage}'\n`);
+            logText.push(`${vt.reset}${vt.dim} * ｢mcode｣: ${sevColor}💀  [${appModule}] '${logifiedMessage}'\n`);
             logText.push(`${vt.reset}${vt.dim}${sevColor}${loggedException}${vt.gray}\n`);
             logText.push(mcode.colorizeLines(`call stack: ${new Error().stack}\n`, vt.gray));
             logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
@@ -885,7 +885,7 @@ const mcode = {
 
         // Function calls are always logged as 'Info'
         logText.push(`${vt.reset}${vt.dim}++\n`);
-        logText.push(`${vt.reset}${vt.dim} µ ｢mcode｣: 🔍 ${sevColor}[${appModule}] '${logifiedMessage}'${vt.reset}${vt.gray}\n`);
+        logText.push(`${vt.reset}${vt.dim} µ ｢mcode｣: ${sevColor}🔍  [${appModule}] '${logifiedMessage}'${vt.reset}${vt.gray}\n`);
         logText.push(mcode.colorizeLines(`call stack: ${new Error().stack}\n`, vt.gray));
         logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
         logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${this.moduleLine(source)}`);
