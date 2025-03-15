@@ -36,15 +36,15 @@ This is an example of each **mcode.log()**, **mcode.warn(),** and **mcode.exp()*
 
 -   JavaScript calls... (see **mcode-log-examples.js**)
 
-<p align="left"><img src=".\.github\images\mcode-log-calls.png" width="720" title="Call examples..."></p>
+<p align="left"><img src=".\.github\images\mcode-log-calls.png" width="720" title="Call examples..." style="border: 0.5px solid lightgray;"></p>
 
 -   Example of the differing severities in the console output...
 
-<p align="left"><img src=".\.github\images\mcode-log-severity.png" width="720" title="Event Severities..."></p>
+<p align="left"><img src=".\.github\images\mcode-log-severity.png" width="720" title="Event Severities..." style="border: 0.5px solid lightgray;"></p>
 
 -   Example of typical app logging...
 
-<p align="left"><img src=".\.github\images\mcode-log-examples.png" width="720" title="Differentiating Modules..."></p>
+<p align="left"><img src=".\.github\images\mcode-log-examples.png" width="720" title="Differentiating Modules..." style="border: 0.5px solid lightgray;"></p>
 
 ## mcode.log() vs. console.log()
 
@@ -70,13 +70,13 @@ const mcode = require('mcode-log');
 
 -   An example of important object state information hidden by **console.log()**...
 
-<p align="left"><img src=".\.github\images\console-log-complex.png" width="720" title="CONSOLE Object..."></p>
+<p align="left"><img src=".\.github\images\console-log-complex.png" width="720" title="CONSOLE Object..." style="border: 0.5px solid lightgray;"></p>
 
 -   The same object state information revealed by **mcode.log()**...
 
-<p align="left"><img src=".\.github\images\mcode-log-complex1.png" width="720" title="MCODE Object 1..."></p>
+<p align="left"><img src=".\.github\images\mcode-log-complex1.png" width="720" title="MCODE Object 1..." style="border: 0.5px solid lightgray;"></p>
 
-<p align="left"><img src=".\.github\images\mcode-log-complex2.png" width="720" title="MCODE Object 2..."></p>
+<p align="left"><img src=".\.github\images\mcode-log-complex2.png" width="720" title="MCODE Object 2..." style="border: 0.5px solid lightgray;"></p>
 
 ## Development
 
@@ -127,21 +127,26 @@ npm link mcode-log
 
 -   A view of the JEST tests in the console...
 
-<p align="left"><img src=".\.github\images\mcode-log-jest.png" width="720" title="Jest Results..."></p>
+<p align="left"><img src=".\.github\images\mcode-log-jest.png" width="720" title="Jest Results..." style="border: 0.5px solid lightgray;"></p>
 
 ### Examples
 
 -   View of mcode.log() in a Browser...
 
-<p align="left"><img src=".\.github\images\mcode-log-frontend.png" width="720" title="Frontend logging..."></p>
+<p align="left"><img src=".\.github\images\mcode-log-frontend.png" width="720" title="Frontend logging..." style="border: 0.5px solid lightgray;"></p>
 
 -   View of mcode.log() in a Server...
 
-<p align="left"><img src=".\.github\images\mcode-log-backend.png" width="720" title="Backend logging..."></p>
+<p align="left"><img src=".\.github\images\mcode-log-backend.png" width="720" title="Backend logging..." style="border: 0.5px solid lightgray;"></p>
+
+-   *New* in v0.6.1, complete source file and line # logging with ctrl-click to source...
+
+<p align="left"><img src=".\.github\images\mcode-log-modline.png" width="720" title="Module and Line numbers..." style="border: 0.5px solid lightgray;"></p>
+
 
 -   View of mcode.exp() in a Server...
 
-<p align="left"><img src=".\.github\images\mcode-exp-trace.png" width="720" title="Backend exception..."></p>
+<p align="left"><img src=".\.github\images\mcode-exp-trace.png" width="720" title="Backend exception..." style="border: 0.5px solid lightgray;"></p>
 
 ### Debugging Example
 
@@ -152,17 +157,17 @@ can place an 'exception' log statement on entry and you'll get the display shown
 -   We recommend the 'MODULE_NAME' define is placed at the beginning of every file for use in mcode.log() and mcode.exp().
 -   This allows the module to continue to log source code origin even after 'webpack' processing.
 
-<p align="left"><img src=".\.github\images\mcode-exp-debug0.png" width="720" title="Code to see params/call..."></p>
+<p align="left"><img src=".\.github\images\mcode-exp-debug0.png" width="720" title="Code to see params/call..." style="border: 0.5px solid lightgray;"></p>
 
 -   Code to log parameters and call stack before the actual exception...
 
-<p align="left"><img src=".\.github\images\mcode-exp-debug1.png" width="720" title="Code to see params/call..."></p>
+<p align="left"><img src=".\.github\images\mcode-exp-debug1.png" width="720" title="Code to see params/call..." style="border: 0.5px solid lightgray;"></p>
 
 -   View of mcode.exp() in the console, and the handled exception (in a higher module) of the thrown exception.
 -   **Note**: The actual call stack is lost in the 'Higher Order Function' that is catching exception by default
     but it is present if the 'preemptive' logging for debug in the local function...
 
-<p align="left"><img src=".\.github\images\mcode-exp-debug2.png" width="720" title="Params/Call Stack..."></p>
+<p align="left"><img src=".\.github\images\mcode-exp-debug2.png" width="720" title="Params/Call Stack..." style="border: 0.5px solid lightgray;"></p>
 
 ### Examining passed parameters...
 
@@ -176,17 +181,17 @@ exports.create = async function ({name, description, plcmodel, account_id, user_
     // create a new plc_program...
 ```
 
-<p align="left"><img src=".\.github\images\mcode-log-params.png" width="720" title="Code to see params/call..."></p>
+<p align="left"><img src=".\.github\images\mcode-log-params.png" width="720" title="Code to see params/call..." style="border: 0.5px solid lightgray;"></p>
 
 ### Throwing 'Error' object and logging support...
 
 The **mcode.exp()** function recognizes and logs the standard 'Error Object' created and thrown to a base condition handler.
 
-<p align="left"><img src=".\.github\images\mcode-exp-throw1.png" width="720" title="Throw Error logging..."></p>
+<p align="left"><img src=".\.github\images\mcode-exp-throw1.png" width="720" title="Throw Error logging..." style="border: 0.5px solid lightgray;"></p>
 
-<p align="left"><img src=".\.github\images\mcode-exp-throw2.png" width="720" title="Throw Error logging..."></p>
+<p align="left"><img src=".\.github\images\mcode-exp-throw2.png" width="720" title="Throw Error logging..." style="border: 0.5px solid lightgray;"></p>
 
-<p align="left"><img src=".\.github\images\mcode-exp-throw3.png" width="720" title="Throw Error logging..."></p>
+<p align="left"><img src=".\.github\images\mcode-exp-throw3.png" width="720" title="Throw Error logging..." style="border: 0.5px solid lightgray;"></p>
 
 ## Included Functions
 
@@ -249,7 +254,7 @@ jsdoc -c .jsdoc.json
 
 ...then open ./docs/index.html
 
-<p align="left"><img src=".\.github\images\mcode-log-jsdocs.png" width="720" title="JSDocs..."></p>
+<p align="left"><img src=".\.github\images\mcode-log-jsdocs.png" width="720" title="JSDocs..." style="border: 0.5px solid lightgray;"></p>
 
 ## Help
 
@@ -276,6 +281,12 @@ Contributor's names and contact info...
 
 ## Version History
 
+* 0.6.1
+    - All log functions now automatically log 'from: /path/to/module/source.js:line'
+      this makes the MODULE_NAME param truly optional and it is now only used if the stack trace cannot determine the mcode.log calling module and source line #.
+    - This changes fixes the log entries showing their orgin ('source') as the 'index.js' of this package,
+      instead you now get a ctrl-clickable link back into your own code.
+    - Updated Babel/Helpers to fix a high severity vulnerability in RegEx complexity.
 * v0.6.0
     - Added more standardized JSDoc module headers for inclusion in end-product documentation.
     - Updated to mcode-data v0.6.0

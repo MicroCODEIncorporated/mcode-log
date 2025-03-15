@@ -83,6 +83,8 @@
  *                                                 of "" and '', now "" only used when embedded ' are needed.
  *                                               - fixed an issues in 'logify*()' with string arrays where element had embedded ".
  *      08-Mar-2025   TJM-MCODE  {0017}   0.5.10 - updated resx() handle HTTP Status 204 properly with '.end()'.
+ *      15-Mar-2025   TJM-MCODE  {0018}   0.6.01 - Passing MODULE_NAME is now optional and the logging functions
+ *                                                 all log complete source path and line # of the caller automatically.
  *
  *
  *
@@ -323,7 +325,7 @@ const mcode = {
             case 'info':
                 sevText = 'info';
                 sevColor += vt.info;
-                logText.push(` i ｢mcode｣: 📣 ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
+                logText.push(` i ｢mcode｣: 📣  ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
                 break;
             case 'w':
             case 'wrn':
@@ -331,14 +333,14 @@ const mcode = {
             case 'warning':
                 sevText = 'warn';
                 sevColor += vt.warn;
-                logText.push(` ! ｢mcode｣: ⚠️ ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
+                logText.push(` ! ｢mcode｣: ⚠️  ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
                 break;
             case 'e':
             case 'err':
             case 'error':
                 sevText = 'error';
                 sevColor += vt.errr;
-                logText.push(` x ｢mcode｣: ⛔ ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
+                logText.push(` x ｢mcode｣: ⛔  ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
                 break;
             case 'x':
             case 'exp':
@@ -346,7 +348,7 @@ const mcode = {
             case 'exception':
                 sevText = 'exception';
                 sevColor += vt.dead;
-                logText.push(` * ｢mcode｣: 💀 ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
+                logText.push(` * ｢mcode｣: 💀  ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
                 break;
             case 's':
             case 'ack':
@@ -354,7 +356,7 @@ const mcode = {
             case 'success':
                 sevText = 'success';
                 sevColor += vt.good;
-                logText.push(` ✓ ｢mcode｣: ✅ ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
+                logText.push(` ✓ ｢mcode｣: ✅  ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
                 break;
             case 'd':
             case 'dbg':
@@ -362,13 +364,13 @@ const mcode = {
             case 'debug':
                 sevText = 'debug';
                 sevColor += vt.dbug;
-                logText.push(` µ ｢mcode｣: 🔍 ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
+                logText.push(` µ ｢mcode｣: 🔍  ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
                 break;
             case '?':
             default:
                 sevText = 'undefined';
                 sevColor += vt.code;
-                logText.push(` ? ｢mcode｣: ❓ ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
+                logText.push(` ? ｢mcode｣: ❓  ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'`);
                 break;
         }
         logText.push('\n');
@@ -399,13 +401,68 @@ const mcode = {
         }
 
         logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
-        logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${source}`);
+        logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${this.moduleLine(source)}`);
         logText.push(`${vt.reset}${vt.dim}  severity: ${vt.reset}${sevColor}${sevText}${vt.reset}\n`);
         logText.push(`${vt.reset}${vt.dim}--${vt.reset}`);
 
         console.log(logText.join(''));
 
         return status;  // for caller to use as needed
+    },
+
+    /**
+     * @func moduleLine
+     * @desc Helper function for log() to determine module and line of caller.
+     * @param source the module name from the mcode.log() call as a default (optional).
+     * @returns 'module:line' of mcode.log() caller.
+     */
+    moduleLine: function (source)
+    {
+        if (typeof Error.prepareStackTrace !== "function")
+        {
+            // Fallback for non-V8 engines -- crawl a string stack trace
+            const stack = new Error().stack.split("\n");
+
+            for (let i = 2; i < stack.length; i++)
+            {
+                if (!stack[i].includes("index.js"))
+                {
+                    const match = stack[i].match(/\(([^)]+):(\d+):\d+\)/);
+                    if (match)
+                    {
+                        return `${match[1]}:${match[2]}`;
+                    }
+                }
+            }
+            return `${source}:???`;
+        }
+
+        // V8 Engine, use strucuted stack trace for speed, save the original handler (string generator)
+        const prepareStackTrace = Error.prepareStackTrace;
+
+        try
+        {
+            // Override to return structured stack trace
+            Error.prepareStackTrace = (_, stack) => stack;
+            const stack = new Error().stack;
+
+            if (stack && stack.length > 2)
+            {
+                const caller = stack.find((s) => !s.getFileName().includes("index.js"));
+
+                if (caller)
+                {
+                    return `${caller.getFileName()}:${caller.getLineNumber()}`;
+                }
+            }
+        }
+        finally
+        {
+            // ensure restoration no matter what
+            Error.prepareStackTrace = prepareStackTrace;
+        }
+
+        return `${source}:???`;
     },
 
     /**
