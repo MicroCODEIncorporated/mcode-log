@@ -83,7 +83,7 @@
  *                                                 of "" and '', now "" only used when embedded ' are needed.
  *                                               - fixed an issues in 'logify*()' with string arrays where element had embedded ".
  *      08-Mar-2025   TJM-MCODE  {0017}   0.5.10 - updated resx() handle HTTP Status 204 properly with '.end()'.
- *      15-Mar-2025   TJM-MCODE  {0018}   0.6.02 - Passing MODULE_NAME is now optional and the logging functions
+ *      15-Mar-2025   TJM-MCODE  {0018}   0.6.01 - Passing MODULE_NAME is now optional and the logging functions
  *                                                 all log complete source path and line # of the caller automatically.
  *
  *
@@ -102,6 +102,7 @@
 
 // #region  I M P O R T S
 
+const path = require("path");
 const data = require('mcode-data');
 const packageJson = require('./package.json');
 
@@ -418,6 +419,9 @@ const mcode = {
      */
     moduleLine: function (source)
     {
+        // Get <app-base-dir> (3 levels up from <baseDir>/node_modules/mcode-log)
+        const baseDir = path.resolve(__dirname, "../../..");
+
         if (typeof Error.prepareStackTrace !== "function")
         {
             // Fallback for non-V8 engines -- crawl a string stack trace
@@ -430,14 +434,20 @@ const mcode = {
                     const match = stack[i].match(/\(([^)]+):(\d+):\d+\)/);
                     if (match)
                     {
-                        return `${match[1]}:${match[2]}`;
+                        // convert to relative path to keep short but informative
+                        const filePath = match[1];
+                        const lineNumber = match[2];
+                        let relativePath = (filePath.includes('node:'))
+                            ? filePath
+                            : path.relative(baseDir, filePath);
+                        return `${relativePath}:${lineNumber}`;
                     }
                 }
             }
             return `${source}:???`;
         }
 
-        // V8 Engine, use strucuted stack trace for speed, save the original handler (string generator)
+        // V8 Engine, use structured stack trace for speed, save the original handler (string generator)
         const prepareStackTrace = Error.prepareStackTrace;
 
         try
@@ -452,7 +462,13 @@ const mcode = {
 
                 if (caller)
                 {
-                    return `${caller.getFileName()}:${caller.getLineNumber()}`;
+                    // convert to relative path to keep short but informative
+                    const filePath = caller.getFileName();
+                    const lineNumber = caller.getLineNumber();
+                    let relativePath = (filePath.includes('node:'))
+                        ? filePath
+                        : path.relative(baseDir, filePath);
+                    return `${relativePath}:${lineNumber}`;
                 }
             }
         }
