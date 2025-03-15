@@ -263,7 +263,7 @@ const mcode = {
      *      mcode.log('This is a test message.', 'myModule', 'info');
      *      mcode.log('object', object, 'myModule);
      */
-    log: function (message = '<no message>', source = '<unknown.js>', severity = 'debug', error = null)
+    log: function (message = '<no message>', source = '<unknown>.js', severity = 'debug', error = null)
     {
         // if 'source' is not a string containing '.js' or '.ts', log it as an object...
         if (!data.isString(source) || (!source.includes('.js') && !source.includes('.ts')))
@@ -311,8 +311,7 @@ const mcode = {
         {
             logifiedMessage = message;
         }
-
-        const appModule = source.split(/[\.,:;!?\s]+/)[0].toUpperCase();
+        const [appModule, moduleLine] = this.getFrom(source);
 
         let sevColor = vt.reset;
         let sevText = severity;
@@ -402,7 +401,7 @@ const mcode = {
         }
 
         logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
-        logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${this.moduleLine(source)}`);
+        logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${moduleLine}`);
         logText.push(`${vt.reset}${vt.dim}  severity: ${vt.reset}${sevColor}${sevText}${vt.reset}\n`);
         logText.push(`${vt.reset}${vt.dim}--${vt.reset}`);
 
@@ -412,15 +411,34 @@ const mcode = {
     },
 
     /**
-     * @func moduleLine
+     * @func extractEntity
+     * @desc Extracts, capitalizes, and returns the ENTITY name of a source module,
+     * by MicroCODE's convention this is APP of app.controller.js, USER of user.view.js, etc.
+     * @param {string} relativePath location of the source code module.
+     * @returns Just the first part--before 1st '.'--of the source file.
+     */
+    extractEntity: function (relativePath)
+    {
+        // Extract the file name (last part of the path)
+        const parts = relativePath.split(/[\\/]/); // Split on both forward and backslashes
+        const fileName = parts.pop(); // Get last element (file name)
+
+        // Extract the part before the first dot (.), return ready for message header as [ENTITY]
+        return fileName.split('.')[0].toUpperCase();
+    },
+
+    /**
+     * @func getFrom
      * @desc Helper function for log() to determine module and line of caller.
      * @param source the module name from the mcode.log() call as a default (optional).
-     * @returns 'module:line' of mcode.log() caller.
+     * @returns (2) strings: 'appModule' and 'module:line' of mcode.log() caller.
      */
-    moduleLine: function (source)
+    getFrom: function (source)
     {
         // Get <app-base-dir> (3 levels up from <baseDir>/node_modules/mcode-log)
         const baseDir = path.resolve(__dirname, "../../..");
+        let moduleLine = `${source}:???`;
+        let appModule = source.split(/[\.,:;!?\s]+/)[0].toUpperCase();
 
         if (typeof Error.prepareStackTrace !== "function")
         {
@@ -440,45 +458,48 @@ const mcode = {
                         let relativePath = (filePath.includes('node:'))
                             ? filePath
                             : path.relative(baseDir, filePath);
-                        return `${relativePath}:${lineNumber}`;
+                        moduleLine = `${relativePath}:${lineNumber}`;
+                        appModule = this.extractEntity(relativePath);;
                     }
                 }
             }
-            return `${source}:???`;
         }
-
-        // V8 Engine, use structured stack trace for speed, save the original handler (string generator)
-        const prepareStackTrace = Error.prepareStackTrace;
-
-        try
+        else
         {
-            // Override to return structured stack trace
-            Error.prepareStackTrace = (_, stack) => stack;
-            const stack = new Error().stack;
+            // V8 Engine, use structured stack trace for speed, save the original handler (string generator)
+            const prepareStackTrace = Error.prepareStackTrace;
 
-            if (stack && stack.length > 2)
+            try
             {
-                const caller = stack.find((s) => !s.getFileName().includes("index.js"));
+                // Override to return structured stack trace
+                Error.prepareStackTrace = (_, stack) => stack;
+                const stack = new Error().stack;
 
-                if (caller)
+                if (stack && stack.length > 2)
                 {
-                    // convert to relative path to keep short but informative
-                    const filePath = caller.getFileName();
-                    const lineNumber = caller.getLineNumber();
-                    let relativePath = (filePath.includes('node:'))
-                        ? filePath
-                        : path.relative(baseDir, filePath);
-                    return `${relativePath}:${lineNumber}`;
+                    const caller = stack.find((s) => !s.getFileName().includes("index.js"));
+
+                    if (caller)
+                    {
+                        // convert to relative path to keep short but informative
+                        const filePath = caller.getFileName();
+                        const lineNumber = caller.getLineNumber();
+                        let relativePath = (filePath.includes('node:'))
+                            ? filePath
+                            : path.relative(baseDir, filePath);
+                        moduleLine = `${relativePath}:${lineNumber}`;
+                        appModule = this.extractEntity(relativePath);
+                    }
                 }
             }
-        }
-        finally
-        {
-            // ensure restoration no matter what
-            Error.prepareStackTrace = prepareStackTrace;
+            finally
+            {
+                // ensure restoration no matter what
+                Error.prepareStackTrace = prepareStackTrace;
+            }
         }
 
-        return `${source}:???`;
+        return [appModule, moduleLine];
     },
 
     /**
@@ -526,7 +547,7 @@ const mcode = {
             logifiedMessage = `{${(typeof obj)}}\n\n${vt.code}${objName}: ${vt.info}` + obj;
         }
 
-        const appModule = source.split(/[\.,:;!?\s]+/)[0].toUpperCase();
+        const [appModule, moduleLine] = this.getFrom(source);
 
         let sevColor = vt.reset;
         let sevText = 'info';
@@ -535,7 +556,7 @@ const mcode = {
         logText.push(`${vt.reset}${vt.dim}++\n`);
         logText.push(`${vt.reset}${vt.dim} i ｢mcode｣: ${sevColor}📣 [${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'\n`);
         logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
-        logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${this.moduleLine(source)}`);
+        logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${moduleLine}`);
         logText.push(`${vt.reset}${vt.dim}  severity: ${vt.reset}${sevColor}${sevText}${vt.reset}\n`);
         logText.push(`${vt.reset}${vt.dim}--${vt.reset}`);
 
@@ -573,7 +594,7 @@ const mcode = {
      * @param {string} exptrace the underlying exception object/trace that was caught... if 'source' is an object to log.
      * @returns {string} 'message: {message} - exception: {exception}' for display in UI.
      */
-    exp: function (message = '<no message>', source = '<unknown.js>', exception = {}, exptrace = {})
+    exp: function (message = '<no message>', source = '<unknown>.js', exception = {}, exptrace = {})
     {
         // if 'source' is not a string containing '.js' or '.ts' (or an API Route), log it as an object...
         if (!data.isString(source) || (!source.includes('.js') && !source.includes('.ts') && !source.includes(`/`)))
@@ -629,7 +650,7 @@ const mcode = {
             logifiedException = mcode.colorizeLines(logifiedException, vt.gray);
         }
 
-        const appModule = source.split(/[\.,:;!?\s]+/)[0].toUpperCase();
+        const [appModule, moduleLine] = this.getFrom(source);
 
         let sevColor = vt.reset;
         sevColor += vt.dead;
@@ -650,7 +671,7 @@ const mcode = {
             logText.push(`${vt.reset}${vt.dim}${sevColor} exception:\n`);
             logText.push(logifiedException + `\n`);
             logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
-            logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${this.moduleLine(source)}`);
+            logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${moduleLine}`);
             logText.push(`${vt.reset}${vt.dim}  severity: ${sevColor}exception w/stack${vt.reset}\n`);
             logText.push(`${vt.reset}${vt.dim}--${vt.reset}`);
 
@@ -665,7 +686,7 @@ const mcode = {
             logText.push(`${vt.reset}${vt.dim}${sevColor}${loggedException}${vt.gray}\n`);
             logText.push(mcode.colorizeLines(`call stack: ${new Error().stack}\n`, vt.gray));
             logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
-            logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${this.moduleLine(source)}`);
+            logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${moduleLine}`);
             logText.push(`${vt.reset}${vt.dim}  severity: ${sevColor}exception w/trace${vt.reset}\n`);
             logText.push(`${vt.reset}${vt.dim}--${vt.reset}`);
 
@@ -689,7 +710,7 @@ const mcode = {
      * @example
      *            mcode.expobj('myObject', myObject, 'myModule', err);  // from within a 'catch (err)' block
      */
-    expobj: function (objName = '<no name>', obj = {}, source = '<unknown.js>', exception = {})
+    expobj: function (objName = '<no name>', obj = {}, source = '<unknown>.js', exception = {})
     {
         let vt = mcode.vt;
         let logText = [];  // build the response as an array for speed
@@ -745,7 +766,7 @@ const mcode = {
             logifiedException = mcode.colorizeLines(exception, vt.gray);
         }
 
-        const appModule = source.split(/[\.,:;!?\s]+/)[0].toUpperCase();
+        const [appModule, moduleLine] = this.getFrom(source);
 
         let sevColor = vt.reset;
         sevColor += vt.dead;
@@ -767,7 +788,7 @@ const mcode = {
             logText.push(`${vt.reset}${vt.dim}${sevColor}exception:\n`);
             logText.push(`${vt.reset}` + logifiedException + `\n`);
             logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
-            logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${this.moduleLine(source)}`);
+            logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${moduleLine}`);
             logText.push(`${vt.reset}${vt.dim}  severity: ${sevColor}exception w/stack${vt.reset}\n`);
             logText.push(`${vt.reset}${vt.dim}--${vt.reset}`);
 
@@ -782,7 +803,7 @@ const mcode = {
             logText.push(`${vt.reset}${vt.dim}${sevColor}${loggedException}${vt.gray}\n`);
             logText.push(mcode.colorizeLines(`call stack: ${new Error().stack}\n`, vt.gray));
             logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
-            logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${this.moduleLine(source)}`);
+            logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${moduleLine}`);
             logText.push(`${vt.reset}${vt.dim}  severity: ${sevColor}exception w/trace${vt.reset}\n`);
             logText.push(`${vt.reset}${vt.dim}--${vt.reset}`);
 
@@ -803,7 +824,7 @@ const mcode = {
      * @param {string} source where the message orginated.
      * @returns {object} the response object.
      */
-    resx: function (res = {}, action = 'none', response = {}, source = '<unknown.js>')
+    resx: function (res = {}, action = 'none', response = {}, source = '<unknown>.js>')
     {
         // example   DB Entity: READ [200] OK,  Entity: 'user' _id: nnnn-nnnn-nnnn-nnnn  or  Array: (n)
         // example HTML Result: READ [200] OK,  Endpoint: 'account.settings'
@@ -859,7 +880,7 @@ const mcode = {
      * @param {string} source where the message orginated.
      * @returns nothing.
      */
-    trace: function (message = '<no message>', source = '<unknown.js>')
+    trace: function (message = '<no message>', source = '<unknown>.js')
     {
         let vt = mcode.vt;
         let logText = [];  // build the response as an array for speed
@@ -879,7 +900,7 @@ const mcode = {
             logifiedMessage = message;
         }
 
-        const appModule = source.split(/[\.,:;!?\s]+/)[0].toUpperCase();
+        const [appModule, moduleLine] = this.getFrom(source);
 
         let sevColor = vt.reset + vt.code;
 
@@ -888,7 +909,7 @@ const mcode = {
         logText.push(`${vt.reset}${vt.dim} µ ｢mcode｣: ${sevColor}🔍 [${appModule}] '${logifiedMessage}'${vt.reset}${vt.gray}\n`);
         logText.push(mcode.colorizeLines(`call stack: ${new Error().stack}\n`, vt.gray));
         logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
-        logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${this.moduleLine(source)}`);
+        logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${moduleLine}`);
         logText.push(`${vt.reset}${vt.dim}  severity: ${sevColor}trace${vt.reset}\n`);
         logText.push(`${vt.reset}${vt.dim}--${vt.reset}`);
 

@@ -281,9 +281,13 @@ Contributor's names and contact info...
 
 ## Version History
 
-* v0.6.4, v0.6.5
+* v0.6.4, v0.6.5, v0.6.6
     - Moved all 'Severity Icons' out of 'dimmed' text and into 'bright' test of the message.
     - Commonized some 'exception' icons I missed from 🟣  to 💀, corrected icon spacing.
+    - Add functions to extract what we call the ENTITY name from a source filename,
+      this is the first part--before he 1st '.'--of the source filename,
+      e.g.: APP of app.controller.js, USER of user.view.js, etc. This is used to construct the
+      logged message header.
 * v0.6.2, v0.6.3
     - Missed some locations logging from: 'source' instead of the new from: 'modLine()' function.
     - Updated file path logging to be 'relative' to make the path size reasonable, and relavant.
