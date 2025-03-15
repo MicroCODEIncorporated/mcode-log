@@ -281,12 +281,13 @@ Contributor's names and contact info...
 
 ## Version History
 
-* 0.6.2
+* v0.6.2, v0.6.3
     - Missed some locations logging from: 'source' instead of the new from: 'modLine()' function.
-* 0.6.1
+    - Updated file path logging to be 'relative' to make the path size reasonable, and relavant.
+* v0.6.1
     - All log functions now automatically log 'from: /path/to/module/source.js:line'
       this makes the MODULE_NAME param truly optional and it is now only used if the stack trace cannot determine the mcode.log calling module and source line #.
-    - This changes fixes the log entries showing their orgin ('source') as the 'index.js' of this package,
+    - This change fixes the log entries showing their orgin ('source') as the 'index.js' of this package,
       instead you now get a ctrl-clickable link back into your own code.
     - Updated Babel/Helpers to fix a high severity vulnerability in RegEx complexity.
 * v0.6.0
