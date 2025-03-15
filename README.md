@@ -281,6 +281,8 @@ Contributor's names and contact info...
 
 ## Version History
 
+* 0.6.2
+    - Missed some locations logging from: 'source' instead of the new from: 'modLine()' function.
 * 0.6.1
     - All log functions now automatically log 'from: /path/to/module/source.js:line'
       this makes the MODULE_NAME param truly optional and it is now only used if the stack trace cannot determine the mcode.log calling module and source line #.

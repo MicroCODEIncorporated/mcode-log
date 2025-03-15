@@ -83,7 +83,7 @@
  *                                                 of "" and '', now "" only used when embedded ' are needed.
  *                                               - fixed an issues in 'logify*()' with string arrays where element had embedded ".
  *      08-Mar-2025   TJM-MCODE  {0017}   0.5.10 - updated resx() handle HTTP Status 204 properly with '.end()'.
- *      15-Mar-2025   TJM-MCODE  {0018}   0.6.01 - Passing MODULE_NAME is now optional and the logging functions
+ *      15-Mar-2025   TJM-MCODE  {0018}   0.6.02 - Passing MODULE_NAME is now optional and the logging functions
  *                                                 all log complete source path and line # of the caller automatically.
  *
  *
@@ -519,7 +519,7 @@ const mcode = {
         logText.push(`${vt.reset}${vt.dim}++\n`);
         logText.push(`${vt.reset}${vt.dim} i ｢mcode｣: 📣 ${sevColor}[${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'\n`);
         logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
-        logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${source}`);
+        logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${this.moduleLine(source)}`);
         logText.push(`${vt.reset}${vt.dim}  severity: ${vt.reset}${sevColor}${sevText}${vt.reset}\n`);
         logText.push(`${vt.reset}${vt.dim}--${vt.reset}`);
 
@@ -634,7 +634,7 @@ const mcode = {
             logText.push(`${vt.reset}${vt.dim}${sevColor} exception:\n`);
             logText.push(logifiedException + `\n`);
             logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
-            logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${source}`);
+            logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${this.moduleLine(source)}`);
             logText.push(`${vt.reset}${vt.dim}  severity: ${sevColor}exception w/stack${vt.reset}\n`);
             logText.push(`${vt.reset}${vt.dim}--${vt.reset}`);
 
@@ -649,7 +649,7 @@ const mcode = {
             logText.push(`${vt.reset}${vt.dim}${sevColor}${loggedException}${vt.gray}\n`);
             logText.push(mcode.colorizeLines(`call stack: ${new Error().stack}\n`, vt.gray));
             logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
-            logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${source}`);
+            logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${this.moduleLine(source)}`);
             logText.push(`${vt.reset}${vt.dim}  severity: ${sevColor}exception w/trace${vt.reset}\n`);
             logText.push(`${vt.reset}${vt.dim}--${vt.reset}`);
 
@@ -751,7 +751,7 @@ const mcode = {
             logText.push(`${vt.reset}${vt.dim}${sevColor}exception:\n`);
             logText.push(`${vt.reset}` + logifiedException + `\n`);
             logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
-            logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${source}`);
+            logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${this.moduleLine(source)}`);
             logText.push(`${vt.reset}${vt.dim}  severity: ${sevColor}exception w/stack${vt.reset}\n`);
             logText.push(`${vt.reset}${vt.dim}--${vt.reset}`);
 
@@ -766,7 +766,7 @@ const mcode = {
             logText.push(`${vt.reset}${vt.dim}${sevColor}${loggedException}${vt.gray}\n`);
             logText.push(mcode.colorizeLines(`call stack: ${new Error().stack}\n`, vt.gray));
             logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
-            logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${source}`);
+            logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${this.moduleLine(source)}`);
             logText.push(`${vt.reset}${vt.dim}  severity: ${sevColor}exception w/trace${vt.reset}\n`);
             logText.push(`${vt.reset}${vt.dim}--${vt.reset}`);
 
@@ -872,7 +872,7 @@ const mcode = {
         logText.push(`${vt.reset}${vt.dim} µ ｢mcode｣: 🔍 ${sevColor}[${appModule}] '${logifiedMessage}'${vt.reset}${vt.gray}\n`);
         logText.push(mcode.colorizeLines(`call stack: ${new Error().stack}\n`, vt.gray));
         logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
-        logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${source}`);
+        logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${this.moduleLine(source)}`);
         logText.push(`${vt.reset}${vt.dim}  severity: ${sevColor}trace${vt.reset}\n`);
         logText.push(`${vt.reset}${vt.dim}--${vt.reset}`);
 
