@@ -83,7 +83,7 @@
  *                                                 of "" and '', now "" only used when embedded ' are needed.
  *                                               - fixed an issues in 'logify*()' with string arrays where element had embedded ".
  *      08-Mar-2025   TJM-MCODE  {0017}   0.5.10 - updated resx() handle HTTP Status 204 properly with '.end()'.
- *      15-Mar-2025   TJM-MCODE  {0018}   0.6.01 - Passing MODULE_NAME is now optional and the logging functions
+ *      16-Mar-2025   TJM-MCODE  {0018}   0.6.07 - Passing MODULE_NAME is now optional and the logging functions
  *                                                 all log complete source path and line # of the caller automatically.
  *
  *
@@ -249,6 +249,102 @@ const mcode = {
     },
 
     /**
+     * @func extractEntity
+     * @memberof mcode
+     * @api private
+     * @desc Extracts, capitalizes, and returns the ENTITY name of a source module,
+     * by MicroCODE's convention this is APP of app.controller.js, USER of user.view.js, etc.
+     * @param {string} relativePath location of the source code module.
+     * @returns Just the first part--before 1st '.'--of the source file.
+     */
+    extractEntity: function (relativePath)
+    {
+        // Extract the file name (last part of the path)
+        const parts = relativePath.split(/[\\/]/); // Split on both forward and backslashes
+        const fileName = parts.pop(); // Get last element (file name)
+
+        // Extract the part before the first dot (.), return ready for message header as [ENTITY]
+        return fileName.split('.')[0].toUpperCase();
+    },
+
+    /**
+     * @func getFrom
+     * @memberof mcode
+     * @api private
+     * @desc Helper function for log() to determine module and line of caller.
+     * @param source the module name from the mcode.log() call as a default (optional).
+     * @returns (2) strings: 'appModule' and 'module:line' of mcode.log() caller.
+     */
+    getFrom: function (source)
+    {
+        // Get <app-base-dir> (3 levels up from <baseDir>/node_modules/mcode-log)
+        const baseDir = path.resolve(__dirname, "../../..");
+        let moduleLine = `${source}:???`;
+        let appModule = source.split(/[\.,:;!?\s]+/)[0].toUpperCase();
+
+        if (typeof Error.prepareStackTrace !== "function")
+        {
+            // Fallback for non-V8 engines -- crawl a string stack trace
+            const stack = new Error().stack.split("\n");
+
+            for (let i = 2; i < stack.length; i++)
+            {
+                if (!stack[i].includes("index.js"))
+                {
+                    const match = stack[i].match(/\(([^)]+):(\d+):\d+\)/);
+                    if (match)
+                    {
+                        // convert to relative path to keep short but informative
+                        const filePath = match[1];
+                        const lineNumber = match[2];
+                        let relativePath = (filePath.includes('node:'))
+                            ? filePath
+                            : path.relative(baseDir, filePath);
+                        moduleLine = `${relativePath}:${lineNumber}`;
+                        appModule = this.extractEntity(relativePath);;
+                    }
+                }
+            }
+        }
+        else
+        {
+            // V8 Engine, use structured stack trace for speed, save the original handler (string generator)
+            const prepareStackTrace = Error.prepareStackTrace;
+
+            try
+            {
+                // Override to return structured stack trace
+                Error.prepareStackTrace = (_, stack) => stack;
+                const stack = new Error().stack;
+
+                if (stack && stack.length > 2)
+                {
+                    const caller = stack.find((s) => !s.getFileName().includes("index.js"));
+
+                    if (caller)
+                    {
+                        // convert to relative path to keep short but informative
+                        const filePath = caller.getFileName();
+                        const lineNumber = caller.getLineNumber();
+                        let relativePath = (filePath.includes('node:'))
+                            ? filePath
+                            : path.relative(baseDir, filePath);
+                        moduleLine = `${relativePath}:${lineNumber}`;
+                        appModule = this.extractEntity(relativePath);
+                    }
+                }
+            }
+            finally
+            {
+                // ensure restoration no matter what
+                Error.prepareStackTrace = prepareStackTrace;
+            }
+        }
+
+        return [appModule, moduleLine];
+    },
+
+    /**
      * @func log
      * @memberof mcode
      * @desc Logs App Events to the Console in a standardized format.
@@ -408,98 +504,6 @@ const mcode = {
         console.log(logText.join(''));
 
         return status;  // for caller to use as needed
-    },
-
-    /**
-     * @func extractEntity
-     * @desc Extracts, capitalizes, and returns the ENTITY name of a source module,
-     * by MicroCODE's convention this is APP of app.controller.js, USER of user.view.js, etc.
-     * @param {string} relativePath location of the source code module.
-     * @returns Just the first part--before 1st '.'--of the source file.
-     */
-    extractEntity: function (relativePath)
-    {
-        // Extract the file name (last part of the path)
-        const parts = relativePath.split(/[\\/]/); // Split on both forward and backslashes
-        const fileName = parts.pop(); // Get last element (file name)
-
-        // Extract the part before the first dot (.), return ready for message header as [ENTITY]
-        return fileName.split('.')[0].toUpperCase();
-    },
-
-    /**
-     * @func getFrom
-     * @desc Helper function for log() to determine module and line of caller.
-     * @param source the module name from the mcode.log() call as a default (optional).
-     * @returns (2) strings: 'appModule' and 'module:line' of mcode.log() caller.
-     */
-    getFrom: function (source)
-    {
-        // Get <app-base-dir> (3 levels up from <baseDir>/node_modules/mcode-log)
-        const baseDir = path.resolve(__dirname, "../../..");
-        let moduleLine = `${source}:???`;
-        let appModule = source.split(/[\.,:;!?\s]+/)[0].toUpperCase();
-
-        if (typeof Error.prepareStackTrace !== "function")
-        {
-            // Fallback for non-V8 engines -- crawl a string stack trace
-            const stack = new Error().stack.split("\n");
-
-            for (let i = 2; i < stack.length; i++)
-            {
-                if (!stack[i].includes("index.js"))
-                {
-                    const match = stack[i].match(/\(([^)]+):(\d+):\d+\)/);
-                    if (match)
-                    {
-                        // convert to relative path to keep short but informative
-                        const filePath = match[1];
-                        const lineNumber = match[2];
-                        let relativePath = (filePath.includes('node:'))
-                            ? filePath
-                            : path.relative(baseDir, filePath);
-                        moduleLine = `${relativePath}:${lineNumber}`;
-                        appModule = this.extractEntity(relativePath);;
-                    }
-                }
-            }
-        }
-        else
-        {
-            // V8 Engine, use structured stack trace for speed, save the original handler (string generator)
-            const prepareStackTrace = Error.prepareStackTrace;
-
-            try
-            {
-                // Override to return structured stack trace
-                Error.prepareStackTrace = (_, stack) => stack;
-                const stack = new Error().stack;
-
-                if (stack && stack.length > 2)
-                {
-                    const caller = stack.find((s) => !s.getFileName().includes("index.js"));
-
-                    if (caller)
-                    {
-                        // convert to relative path to keep short but informative
-                        const filePath = caller.getFileName();
-                        const lineNumber = caller.getLineNumber();
-                        let relativePath = (filePath.includes('node:'))
-                            ? filePath
-                            : path.relative(baseDir, filePath);
-                        moduleLine = `${relativePath}:${lineNumber}`;
-                        appModule = this.extractEntity(relativePath);
-                    }
-                }
-            }
-            finally
-            {
-                // ensure restoration no matter what
-                Error.prepareStackTrace = prepareStackTrace;
-            }
-        }
-
-        return [appModule, moduleLine];
     },
 
     /**
