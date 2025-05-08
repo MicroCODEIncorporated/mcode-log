@@ -85,6 +85,13 @@
  *      08-Mar-2025   TJM-MCODE  {0017}   0.5.10 - updated resx() handle HTTP Status 204 properly with '.end()'.
  *      16-Mar-2025   TJM-MCODE  {0018}   0.6.07 - Passing MODULE_NAME is now optional and the logging functions
  *                                                 all log complete source path and line # of the caller automatically.
+ *      17-Apr-2025   TJM-MCODE  {0019}   0.6.08 - added 'logifyObject()' to handle all objects, including arrays and JSON.
+ *      18-Apr-2025   TJM-MCODE  {0020}   0.6.09 - add support for passing 'data' thru 'resx()' to support HTML responses for
+ *                                                 HTMX UI swaps, specifically to support an 'app-banner',
+ *                                                 added 'fatal' severity to align with app-banner.
+ *      24-Apr-2025   TJM-MCODE  {0021}   0.6.09 - added support for UUID 'Event Id' as optional data to be logged for traceability.
+ *
+ *
  *
  *
  *
@@ -102,8 +109,9 @@
 
 // #region  I M P O R T S
 
+const _data = require('mcode-data');
+
 const path = require("path");
-const data = require('mcode-data');
 const packageJson = require('./package.json');
 
 // #endregion
@@ -353,16 +361,17 @@ const mcode = {
      * @param {string} source where the message orginated.
      * @param {string} severity Event.Severity: 'info', 'warn', 'error', 'exception', and 'success'.
      * @param {string} error [Optional] error message from another source.
+     * @param {string} event_id [Optional] a UUID to uniquely tie this logged event back into an error display in the UI.
      * @returns {string} '{severity}: {message}' for display in UI.
      *
      * @example
      *      mcode.log('This is a test message.', 'myModule', 'info');
      *      mcode.log('object', object, 'myModule);
      */
-    log: function (message = '<no message>', source = '<unknown>.js', severity = 'debug', error = null)
+    log: function (message = '<no message>', source = '<unknown>.js', severity = 'debug', error = null, event_id = null)
     {
         // if 'source' is not a string containing '.js' or '.ts', log it as an object...
-        if (!data.isString(source) || (!source.includes('.js') && !source.includes('.ts')))
+        if (!_data.isString(source) || (!source.includes('.js') && !source.includes('.ts')))
         {
             return mcode.logobj(message, source, severity);
         }
@@ -379,7 +388,7 @@ const mcode = {
         }
 
         // flatten the message object to strings for logging...
-        if (data.isArray(message))
+        if (_data.isArray(message))
         {
             logifiedMessage += `{array}\n${vt.code}[\n`;
 
@@ -391,15 +400,15 @@ const mcode = {
             });
             logifiedMessage += ']';
         }
-        else if (data.isObject(message))
+        else if (_data.isObject(message))
         {
             logifiedMessage = '\n' + mcode.logify(mcode.logifyObject(message));
         }
-        else if (data.isJson(message))
+        else if (_data.isJson(message))
         {
             logifiedMessage = '\n' + mcode.logify(mcode.logifyObject(message));
         }
-        else if (data.isFunction(message))
+        else if (_data.isFunction(message))
         {
             logifiedMessage = '\n' + `${message}`;
         }
@@ -441,6 +450,7 @@ const mcode = {
             case 'x':
             case 'exp':
             case 'crash':
+            case 'fatal':
             case 'exception':
                 sevText = 'exception';
                 sevColor += vt.dead;
@@ -474,11 +484,11 @@ const mcode = {
         let logifiedError = false;
         if (error)
         {
-            if (data.isObject(error))
+            if (_data.isObject(error))
             {
                 logifiedError = mcode.logifyObject(error);
             }
-            else if (data.isJson(error))
+            else if (_data.isJson(error))
             {
                 logifiedError = mcode.logifyObject(error);
             }
@@ -495,7 +505,13 @@ const mcode = {
 
             logText.push(`${vt.reset}${vt.dim}     error: ${vt.reset}${sevColor}${mcode.colorizeLines(mcode.simplify(logifiedError), sevColor)}\n`);
         }
+        if (event_id)
+        {
+            const uuidInfo = _data.uuidDecode(event_id);  // see mcode.data package
 
+            logText.push(`${vt.reset}${vt.dim}     event: ${vt.reset}${sevColor}${event_id}${vt.reset}`);
+            logText.push(`${vt.reset}${vt.dim}    node: ${vt.reset}${sevColor}${uuidInfo?.macid}${vt.reset}\n`);  // aligned to 'time:'
+        }
         logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
         logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${moduleLine}`);
         logText.push(`${vt.reset}${vt.dim}  severity: ${vt.reset}${sevColor}${sevText}${vt.reset}\n`);
@@ -514,19 +530,20 @@ const mcode = {
      * @param {string} objName the name of the Object and/or a message to precede it in the log.
      * @param {object} obj javaScript Object to log.
      * @param {string} source where the Object orginated.
+     * @param {string} event_id [Optional] a UUID to uniquely tie this logged event back into an error display in the UI.
      *
      * @example
      *            mcode.logobj('myObject', myObject, 'myModule');
      *            mcode.obj('myObject', myObject, 'myModule');
      */
-    logobj: function (objName, obj, source = '<undefined>.js')
+    logobj: function (objName, obj, source = '<undefined>.js', event_id = null)
     {
         let vt = mcode.vt;
         let logText = [];  // build the response as an array for speed
         let logifiedMessage = '';
 
         // flatten the message object to strings for logging...
-        if (data.isArray(obj))
+        if (_data.isArray(obj))
         {
             logifiedMessage += `{array}\n\n${vt.code}${objName}: \n[\n`;
 
@@ -538,11 +555,11 @@ const mcode = {
             });
             logifiedMessage += ']';
         }
-        else if (data.isObject(obj))
+        else if (_data.isObject(obj))
         {
             logifiedMessage = `{${(typeof obj)}}\n\n${vt.code}${objName}:\n` + mcode.colorizeLines(mcode.logify(mcode.logifyObject(obj)), vt.code);
         }
-        else if (data.isJson(obj))
+        else if (_data.isJson(obj))
         {
             logifiedMessage = `{json}\n\n${vt.code}${objName}:\n` + mcode.colorizeLines(mcode.logify(mcode.logifyObject(obj)), vt.code);
         }
@@ -559,6 +576,13 @@ const mcode = {
 
         logText.push(`${vt.reset}${vt.dim}++\n`);
         logText.push(`${vt.reset}${vt.dim} i ｢mcode｣: ${sevColor}📣 [${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor)}'\n`);
+        if (event_id)
+        {
+            const uuidInfo = _data.uuidDecode(event_id);  // see mcode.data package
+
+            logText.push(`${vt.reset}${vt.dim}     event: ${vt.reset}${sevColor}${event_id}${vt.reset}`);
+            logText.push(`${vt.reset}${vt.dim}    node: ${vt.reset}${sevColor}${uuidInfo?.macid}${vt.reset}\n`);  // aligned to 'time:'
+        }
         logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
         logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${moduleLine}`);
         logText.push(`${vt.reset}${vt.dim}  severity: ${vt.reset}${sevColor}${sevText}${vt.reset}\n`);
@@ -568,14 +592,15 @@ const mcode = {
     },
 
     // convenient abbreviations of all the logged severities...
-    info: function (message, source) {mcode.log(message, source, 'info');},
-    warn: function (message, source) {mcode.log(message, source, 'warn');},
-    error: function (message, source) {mcode.log(message, source, 'error');},
-    error: function (message, source, error) {mcode.log(message, source, 'error', error);},
-    crash: function (message, source) {mcode.log(message, source, 'exception');},
-    done: function (message, source) {mcode.log(message, source, 'success');},
-    debug: function (message, source) {mcode.log(message, source, 'debug');},
-    success: function (message, source) {mcode.log(message, source, 'success');},
+    info: function (message, source, event_id) {mcode.log(message, source, 'info', null, event_id);},
+    warn: function (message, source, event_id) {mcode.log(message, source, 'warn', null, event_id);},
+    error: function (message, source, event_id) {mcode.log(message, source, 'error', null, event_id);},
+    error: function (message, source, error, event_id) {mcode.log(message, source, 'error', error, event_id);},
+    crash: function (message, source, event_id) {mcode.log(message, source, 'exception', null, event_id);},
+    fatal: function (message, source, event_id) {mcode.log(message, source, 'exception', null, event_id);},
+    done: function (message, source, event_id) {mcode.log(message, source, 'success', null, event_id);},
+    debug: function (message, source, event_id) {mcode.log(message, source, 'debug', null, event_id);},
+    success: function (message, source, event_id) {mcode.log(message, source, 'success', null, event_id);},
 
     /**
      * @func ready
@@ -596,12 +621,13 @@ const mcode = {
      * @param {string} source where the message orginated.
      * @param {string} exception the underlying exception object/trace that was caught.
      * @param {string} exptrace the underlying exception object/trace that was caught... if 'source' is an object to log.
+     * @param {string} event_id [Optional] a UUID to uniquely tie this logged event back into an error display in the UI.
      * @returns {string} 'message: {message} - exception: {exception}' for display in UI.
      */
-    exp: function (message = '<no message>', source = '<unknown>.js', exception = {}, exptrace = {})
+    exp: function (message = '<no message>', source = '<unknown>.js', exception = {}, exptrace = {}, event_id = null)
     {
         // if 'source' is not a string containing '.js' or '.ts' (or an API Route), log it as an object...
-        if (!data.isString(source) || (!source.includes('.js') && !source.includes('.ts') && !source.includes(`/`)))
+        if (!_data.isString(source) || (!source.includes('.js') && !source.includes('.ts') && !source.includes(`/`)))
         {
             return mcode.expobj(message, source, exception, exptrace);
         }
@@ -613,11 +639,11 @@ const mcode = {
         let isExpObject = false;
 
         // flatten the message object to strings for logging...
-        if (data.isObject(message))
+        if (_data.isObject(message))
         {
             logifiedMessage = '\n' + mcode.logify(mcode.logifyObject(message));
         }
-        else if (data.isJson(message))
+        else if (_data.isJson(message))
         {
             logifiedMessage = '\n' + mcode.logify(mcode.logifyObject(message));
         }
@@ -627,7 +653,7 @@ const mcode = {
         }
 
         // flatten the exception object to strings for logging...
-        if (data.isObject(exception))
+        if (_data.isObject(exception))
         {
             isExpObject = true;
 
@@ -642,7 +668,7 @@ const mcode = {
                 logifiedException = `${vt.reset}` + mcode.colorizeLines(mcode.logify(mcode.logifyObject(exception)), vt.code);
             }
         }
-        else if (data.isJson(exception))
+        else if (_data.isJson(exception))
         {
             // treat as JSON, not a stack trace and show in default colors...
             logifiedException = `${vt.reset}` + mcode.colorizeLines(mcode.logifyObject(exception), vt.code);
@@ -674,6 +700,13 @@ const mcode = {
             logText.push(`${vt.reset}${vt.dim} * ｢mcode｣: ${sevColor}💀 [${appModule}] '${logifiedMessage}'\n`);
             logText.push(`${vt.reset}${vt.dim}${sevColor} exception:\n`);
             logText.push(logifiedException + `\n`);
+            if (event_id)
+            {
+                const uuidInfo = _data.uuidDecode(event_id);  // see mcode.data package
+
+                logText.push(`${vt.reset}${vt.dim}     event: ${vt.reset}${sevColor}${event_id}${vt.reset}`);
+                logText.push(`${vt.reset}${vt.dim}    node: ${vt.reset}${sevColor}${uuidInfo?.macid}${vt.reset}\n`);  // aligned to 'time:'
+            }
             logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
             logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${moduleLine}`);
             logText.push(`${vt.reset}${vt.dim}  severity: ${sevColor}exception w/stack${vt.reset}\n`);
@@ -689,6 +722,13 @@ const mcode = {
             logText.push(`${vt.reset}${vt.dim} * ｢mcode｣: ${sevColor}💀 [${appModule}] '${logifiedMessage}'\n`);
             logText.push(`${vt.reset}${vt.dim}${sevColor}${loggedException}${vt.gray}\n`);
             logText.push(mcode.colorizeLines(`call stack: ${new Error().stack}\n`, vt.gray));
+            if (event_id)
+            {
+                const uuidInfo = _data.uuidDecode(event_id);  // see mcode.data package
+
+                logText.push(`${vt.reset}${vt.dim}     event: ${vt.reset}${sevColor}${event_id}${vt.reset}`);
+                logText.push(`${vt.reset}${vt.dim}    node: ${vt.reset}${sevColor}${uuidInfo?.macid}${vt.reset}\n`);  // aligned to 'time:'
+            }
             logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
             logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${moduleLine}`);
             logText.push(`${vt.reset}${vt.dim}  severity: ${sevColor}exception w/trace${vt.reset}\n`);
@@ -709,19 +749,20 @@ const mcode = {
      * @param {object} obj javaScript Object to log.
      * @param {string} source where the Object orginated.
      * @param {string} exception the underlying exception message that was caught.
+     * @param {string} event_id [Optional] a UUID to uniquely tie this logged event back into an error display in the UI.
      * @returns {string} 'message: {message} - exception: {exception}' for display in UI.
      *
      * @example
      *            mcode.expobj('myObject', myObject, 'myModule', err);  // from within a 'catch (err)' block
      */
-    expobj: function (objName = '<no name>', obj = {}, source = '<unknown>.js', exception = {})
+    expobj: function (objName = '<no name>', obj = {}, source = '<unknown>.js', exception = {}, event_id = null)
     {
         let vt = mcode.vt;
         let logText = [];  // build the response as an array for speed
         let logifiedMessage = '';
 
         // flatten the message object to strings for logging...
-        if (data.isArray(obj))
+        if (_data.isArray(obj))
         {
             logifiedMessage += `{array}\n\n${vt.code}${objName}: \n[\n`;
 
@@ -733,11 +774,11 @@ const mcode = {
             });
             logifiedMessage += ']';
         }
-        else if (data.isObject(obj))
+        else if (_data.isObject(obj))
         {
             logifiedMessage = `{${(typeof obj)}}\n\n${vt.code}${objName}:\n` + mcode.logify(mcode.logifyObject(obj));
         }
-        else if (data.isJson(obj))
+        else if (_data.isJson(obj))
         {
             logifiedMessage = `{json}\n\n${vt.code}${objName}:\n` + mcode.logify(mcode.logifyObject(obj));
         }
@@ -747,7 +788,7 @@ const mcode = {
         }
 
         // flatten the exception object to strings for logging...
-        if (data.isObject(exception))
+        if (_data.isObject(exception))
         {
             isExpObject = true;
 
@@ -761,7 +802,7 @@ const mcode = {
                 logifiedException = `${vt.reset}` + mcode.colorizeLines(mcode.logify(mcode.logifyObject(exception)), vt.code);
             }
         }
-        else if (data.isJson(exception))
+        else if (_data.isJson(exception))
         {
             logifiedException = mcode.colorizeLines(mcode.logifyObject(exception), vt.code);
         }
@@ -791,6 +832,13 @@ const mcode = {
             logText.push(`${vt.reset}${vt.dim} * ｢mcode｣: ${sevColor}💀 [${appModule}] '${logifiedMessage}'\n`);
             logText.push(`${vt.reset}${vt.dim}${sevColor}exception:\n`);
             logText.push(`${vt.reset}` + logifiedException + `\n`);
+            if (event_id)
+            {
+                const uuidInfo = _data.uuidDecode(event_id);  // see mcode.data package
+
+                logText.push(`${vt.reset}${vt.dim}     event: ${vt.reset}${sevColor}${event_id}${vt.reset}`);
+                logText.push(`${vt.reset}${vt.dim}    node: ${vt.reset}${sevColor}${uuidInfo?.macid}${vt.reset}\n`);  // aligned to 'time:'
+            }
             logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
             logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${moduleLine}`);
             logText.push(`${vt.reset}${vt.dim}  severity: ${sevColor}exception w/stack${vt.reset}\n`);
@@ -806,6 +854,13 @@ const mcode = {
             logText.push(`${vt.reset}${vt.dim} * ｢mcode｣: ${sevColor}💀 [${appModule}] '${logifiedMessage}'\n`);
             logText.push(`${vt.reset}${vt.dim}${sevColor}${loggedException}${vt.gray}\n`);
             logText.push(mcode.colorizeLines(`call stack: ${new Error().stack}\n`, vt.gray));
+            if (event_id)
+            {
+                const uuidInfo = _data.uuidDecode(event_id);  // see mcode.data package
+
+                logText.push(`${vt.reset}${vt.dim}     event: ${vt.reset}${sevColor}${event_id}${vt.reset}`);
+                logText.push(`${vt.reset}${vt.dim}    node: ${vt.reset}${sevColor}${uuidInfo?.macid}${vt.reset}\n`);  // aligned to 'time:'
+            }
             logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
             logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${moduleLine}`);
             logText.push(`${vt.reset}${vt.dim}  severity: ${sevColor}exception w/trace${vt.reset}\n`);
@@ -818,61 +873,98 @@ const mcode = {
     },
 
     /**
+     * @typedef {object} resxData
+     * @property {number} status - HTTP Status Code
+     * @property {string} message - Message to log to console / file
+     * @property {string} data - Response data to be send to Frontend/Client/Browser - optionally a HTML component
+     * @property {string} entity - [optional] The DB Entity name associated with this Response/Event
+     * @property {string} endpoint - [optional] The API Endpoint name associated with this Response/Event
+     * @property {string} error - [optional] Any error message associated with this response/event
+     * @property {UUID} _id - [optional] The DB Record UUID associated with this Response/Event
+     * @property {UUID} event_id - [optional] A unique Event UUID for traceability from UI to LOG.
+     */
+
+    /**
      * @func resx
      * @memberof mcode
      * @desc 'res' extension - logs an http response and returns the response result.
      * @api public
      * @param {object} res the response object.
      * @param {string} action the action that was being performed.
-     * @param {object} response the response: {status, message, data, error}.
+     * @param {object} resxData the response: datatype = 'resxData'.
      * @param {string} source where the message orginated.
      * @returns {object} the response object.
      */
-    resx: function (res = {}, action = 'none', response = {}, source = '<unknown>.js>')
+    resx: function (res = {}, action = 'none', resxData = {}, source = '<unknown>.js>')
     {
         // example   DB Entity: READ [200] OK,  Entity: 'user' _id: nnnn-nnnn-nnnn-nnnn  or  Array: (n)
         // example HTML Result: READ [200] OK,  Endpoint: 'account.settings'
-        const id = response.id || response.data?.id || '';
-        const entity = response.entity;
-        const endpoint = response.endpoint || `<unknown>`;
-        const status = response.status || 0;
-        const countId = data.isArray(response.data) ? `Array: (${response.data.length})` : (id != '') ? `id: '${id}'` : ``;
-        const caller = (entity) ? `Entity: '${entity}' ${countId}` : `Endpoint: '${endpoint}'`;
-        const message = `${action.toUpperCase()} ${data.httpStatus(status)},  ${caller}`;
+        const _id = resxData?._id || resxData.data?._id || resxData.data?.id || '<_id?>';
+        const count_id = _data.isArray(resxData.data) ? `Array: (${resxData.data.length})` : (_id != '') ? `_id: ${_id}` : ``;
+        const event_id = resxData?.event_id || null;
 
-        if (response.error)
+        const entity = resxData?.entity;
+        const endpoint = resxData?.endpoint || `<endpoint?>`;
+        const caller = (entity) ? `Entity: ${entity} ${count_id}` : `Endpoint: ${endpoint}`;
+        const status = resxData?.status || 0;
+        const message = `${action.toUpperCase()} ${_data.httpStatus(status)},  ${caller}`;
+
+        // status to severity: 100s = 'info', 200s = 'success', etc.
+        const severity = _data.httpSeverity(status);
+
+        if (_data.isHtml(resxData?.data))
         {
-            // returning an error in the response...
-            this.exp(message, source, response.error);
-            return res.status(response.status).send({message: message, error: response.error});
-        }
-        if (response.data)
-        {
-            if (entity)
+            if (severity === 'fatal')
             {
-                // returning Entity data in the response...
-                this.log(message, source, 'info');
-                return res.status(response.status).send({message: message, data: response.data});
+                // show exception that caused this in the response...
+                this.exp(message, source, resxData?.error?.message, resxData?.error?.stack, event_id);
             }
             else
             {
-                // returning a direct Endpoint *result*, like HTML/HTMX - {0015}
-                this.log(message, source, 'info');
-                return res.status(response.status).send(response.data);
+                // all severities other than 'fatal' exception are logged
+                // with color and icons based on 'severity'
+                this.log(message, source, severity, resxData?.error?.message, event_id);
             }
+
+            // send HTML directly to the Frontend (HTMX Support)
+            return res.status(resxData.status).send(resxData.data);
         }
-
-        // log the response... (NOTE: debug messages are not logged in production mode - {0008})
-        this.log(message, source, 'debug');
-
-        // handle 'No Content' (204) response - {0017}
-        if (response.status === 204)
+        else
         {
-            return res.status(204).end();  // to end request without a body and prevent client retry
-        }
+            if (resxData.error)
+            {
+                // returning an error in the response...
+                this.exp(message, source, resxData.error, null, event_id);
+                return res.status(resxData.status).send({message: message, error: resxData.error});
+            }
+            if (resxData.data)
+            {
+                if (entity)
+                {
+                    // returning Entity data in the response...
+                    this.log(message, source, severity, null, event_id);
+                    return res.status(resxData.status).send({message: message, data: resxData.data});
+                }
+                else
+                {
+                    // returning a direct Endpoint *result*, like HTML/HTMX - {0015}
+                    this.log(message, source, severity, null, event_id);
+                    return res.status(resxData.status).send(resxData.data);
+                }
+            }
 
-        // all other responses...
-        return res.status(response.status).send({message: message});
+            // log the response...
+            this.log(message, source, severity, null, event_id);
+
+            // handle 'No Content' (204) response - {0017}
+            if (resxData.status === 204)
+            {
+                return res.status(204).end();  // to end request without a body and prevent client retry
+            }
+
+            // all other responses...
+            return res.status(resxData.status).send({message: message});
+        }
     },
 
     /**
@@ -882,20 +974,21 @@ const mcode = {
      * @api public
      * @param {object} message pre-formatted message to be logged.
      * @param {string} source where the message orginated.
+     * @param {string} event_id [Optional] a UUID to uniquely tie this logged event back into an error display in the UI.
      * @returns nothing.
      */
-    trace: function (message = '<no message>', source = '<unknown>.js')
+    trace: function (message = '<no message>', source = '<unknown>.js', event_id = null)
     {
         let vt = mcode.vt;
         let logText = [];  // build the response as an array for speed
         let logifiedMessage = '';
 
         // flatten the message object to strings for logging...
-        if (data.isObject(message))
+        if (_data.isObject(message))
         {
             logifiedMessage = '\n' + mcode.logify(mcode.logifyObject(message));
         }
-        else if (data.isJson(message))
+        else if (_data.isJson(message))
         {
             logifiedMessage = '\n' + mcode.logify(mcode.logifyObject(message));
         }
@@ -912,6 +1005,13 @@ const mcode = {
         logText.push(`${vt.reset}${vt.dim}++\n`);
         logText.push(`${vt.reset}${vt.dim} µ ｢mcode｣: ${sevColor}🔍 [${appModule}] '${logifiedMessage}'${vt.reset}${vt.gray}\n`);
         logText.push(mcode.colorizeLines(`call stack: ${new Error().stack}\n`, vt.gray));
+        if (event_id)
+        {
+            const uuidInfo = _data.uuidDecode(event_id);  // see mcode.data package
+
+            logText.push(`${vt.reset}${vt.dim}     event: ${vt.reset}${sevColor}${event_id}${vt.reset}`);
+            logText.push(`${vt.reset}${vt.dim}    node: ${vt.reset}${sevColor}${uuidInfo?.macid}${vt.reset}\n`);  // aligned to 'time:'
+        }
         logText.push(`${vt.reset}${vt.dim}      time: ${vt.reset}${mcode.timeStamp()}`);
         logText.push(`${vt.reset}${vt.dim}      from: ${vt.reset}${moduleLine}`);
         logText.push(`${vt.reset}${vt.dim}  severity: ${sevColor}trace${vt.reset}\n`);
@@ -930,13 +1030,13 @@ const mcode = {
      */
     simplify: function (object)
     {
-        if (data.isUndefined(object))
+        if (_data.isUndefined(object))
         {
             return 'undefined';
         }
 
         // flatten the message object to strings for logging...
-        if (data.isObject(object))
+        if (_data.isObject(object))
         {
             // do not use JSON.stringify(object, null, 4)
             // --it's output is horrible, produce our own here in 'simplify()'
@@ -1363,7 +1463,7 @@ const mcode = {
                 return handleNonObject(currentObject);
             }
 
-            if (data.isTimeStamp(currentObject))
+            if (_data.isTimeStamp(currentObject))
             {
                 return `"${this.timeStamp(now = currentObject, local = true)}"`;
             }
