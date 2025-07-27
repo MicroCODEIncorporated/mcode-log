@@ -1679,7 +1679,7 @@ const mcode = {
         {
             let dayofweek = WEEKDAYS[now.getUTCDay()];           // 3-letter day of week
             let year = now.getUTCFullYear();                     // 4-digit year
-            let month = MONTHS[now.getMonth()];                  // 3-letter month of year
+            let month = MONTHS[now.getUTCMonth()];               // 3-letter month of year
             let day = leadingZeros(now.getUTCDate(), 2);         // 2-digit day
             let hours = leadingZeros(now.getUTCHours(), 2);      // 2-digit hour
             let minutes = leadingZeros(now.getUTCMinutes(), 2);  // 2-digit minute
