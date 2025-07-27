@@ -94,7 +94,7 @@ npm install mcode-log
 
 ### Testing
 
-This package includes a simple test/demo module: **index.test.js**. running it direclty will show you all the 'log' and 'exp' formatting that occurs into the console and the recursive destruction of objects when they are logged.
+This package includes a simple test/demo module: **index.test.js**. running it directly will show you all the 'log' and 'exp' formatting that occurs into the console and the recursive destruction of objects when they are logged.
 
 - From your project directory...
 
