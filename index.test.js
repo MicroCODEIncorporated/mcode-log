@@ -688,3 +688,13 @@ describe('mcode.expobj', () =>
         consoleSpy.mockRestore();
     });
 });
+// COLORIZELINES Test
+describe('mcode.colorizeLines', () => {
+    it('applies a VT color code to each line', () => {
+        if (!mcode.vt.red) mcode.vt.red = mcode.vt.fg.red;
+        const input = 'one\ntwo';
+        const result = mcode.colorizeLines(input, mcode.vt.red);
+        const expected = `${mcode.vt.fg.red}one\n${mcode.vt.fg.red}two`;
+        expect(result).toBe(expected);
+    });
+});
