@@ -147,6 +147,66 @@ npm link mcode-log
 
 <p align="left"><img src=".\.github\images\mcode-exp-trace.png" width="720" title="Backend exception..." style="border: 0.5px solid lightgray;"></p>
 
+### Enhanced JSON Colorization (v0.7.0)
+
+**New in v0.7.0**: Enhanced JSON colorization with type-specific color schemes for improved readability and debugging.
+
+#### Color Scheme Mapping
+
+| Element Type | VT (Terminal) | HTML | Visual Effect |
+|-------------|---------------|------|---------------|
+| **Punctuation** | Cyan | Cyan | Brackets, braces, colons, commas |
+| **Key names** | White | White | Object property names |
+| **Strings** | Cyan | Dark Cyan  | Text values in quotes |
+| **Integers** | Blue | Blue  | Whole numbers |
+| **Floating point** | Green | Green  | Decimal numbers |
+| **BigInt** | Magenta | Magenta  | Large integers with 'n' suffix |
+| **Boolean (true)** | Lime | Lime  | True values |
+| **Boolean (false)** | Red | Red  | False values |
+| **Null** | Gray | Gray  | Null values |
+
+#### Enhanced Features
+
+- **Intelligent Type Detection**: Automatically detects and colors different data types in JSON output
+- **Context-Aware Processing**: Properly handles nested objects and arrays with correct colorization
+- **Dual-Mode Support**: Works in both terminal (VT) and HTML rendering modes
+- **Backward Compatible**: All existing functionality preserved while adding enhanced visual distinction
+
+#### Usage Examples
+
+```javascript
+// Enhanced colorization automatically applied to all object logging
+const sampleData = {
+    name: "John Doe",        // String: cyan
+    age: 30,                 // Integer: blue
+    height: 5.75,            // Float: green
+    bigNumber: 123456789n,   // BigInt: magenta
+    isActive: true,          // Boolean true: lime
+    isDeleted: false,        // Boolean false: red
+    lastLogin: null          // Null: gray
+};
+
+// Terminal colorization
+mcode.logobj('User Data', sampleData, 'user.js');
+
+// HTML colorization for web UIs
+const htmlOutput = mcode.logobjHtml('User Data', sampleData, 'user.js');
+```
+
+#### Output Example
+
+<p align="left"><img src=".\.github\images\mcode-log-html-json.png" width="720" title="JSON HTML output..." style="border: 0.5px solid lightgray;"></p>
+
+
+#### Test Coverage
+
+v0.7.0 includes **46 comprehensive test cases** covering:
+- All data type colorization scenarios
+- Mixed arrays and nested objects
+- Edge cases (negative numbers, scientific notation)
+- Empty structures and special string values
+- Consistency between VT and HTML modes
+
 ### Debugging Example
 
 If you'd like see the values of any parameter--and the call stack that got you to a specific function--you
@@ -224,7 +284,7 @@ These are the functions we want at the ready in any module for development and d
 | **exp, expobj**    | Logs standardized exception with an object and stack dump.   | mcode.expobj('object name', object, 'module name', 'exp object')                                          |
 | **resx**           | Logs a standardized HTTP response and sends the response.    | mcode.resx(res, 'action', {code: 000, message: 'message', data: object, error: 'message'}, 'module name') |
 | **trace**          | Logs a standardized function call with a trace dump.         | mcode.trace('message' or object, 'module name')                                                           |
-| **logify**         | Converts a message or JSON into text appropriate for log.    | mcode.logify('object or JSON string')                                                                     |
+| **logify**         | Converts a message or JSON into colorized text for log (v0.7.0: enhanced with type-specific colors). | mcode.logify('object or JSON string')                                                                     |
 | **simplify**       | Strips a string of BRACES, BRACKETS, QUOTES, etc.            | mcode.simplify('object or JSON string')                                                                   |
 | **logifyObject**   | Converts an Object into text appropriate for log.            | mcode.logifyObject('object')                                                                              |
 | **simplifyObject** | Converts an Object to string less BRACES, BRACKETS, etc.     | mcode.simplifyObject('object')                                                                            |
@@ -291,6 +351,15 @@ Contributor's names and contact info...
 
 ## Version History
 
+- v0.7.0
+  - **Enhanced JSON Colorization**: Completely refined JSON output colorization in both VT (terminal) and HTML modes with type-specific color schemes.
+  - **Type-Specific Colors**: Different colors for strings (cyan), integers (blue), floats (green), BigInt (magenta), booleans (lime/red), null (gray), keys (white), and punctuation (white).
+  - **Improved Value Detection**: Enhanced logify() function with intelligent type detection for proper colorization of all JSON data types.
+  - **Comprehensive Testing**: Added 46 comprehensive test cases covering all colorization scenarios in both VT and HTML modes.
+  - Added HTML output support for displaying JSON objects in UIs and for UI views of logging.
+  - Added support for HTML formatted logging functions: logHtml(), logobjHtml(), and logifyHtml().
+  - Added support for HTML formatted logging functions: expHtml(), expobjHtml(), and traceHtml().
+  - Updated all relevant JSDoc headers to include new HTML logging functions.
 - v0.6.9
   - Added support for UUID 'Event Id' as optional data to be logged for traceability.
   - Added support for passing 'data' thru 'resx()' to support HTML responses via HTMX.
