@@ -165,6 +165,7 @@ npm link mcode-log
 | **Boolean (false)** | Red | Red  | False values |
 | **Null** | Gray | Gray  | Null values |
 
+</br>
 <p align="left"><img src=".\.github\images\mcode-log-color-json.png" width="720" title="Backend exception..." style="border: 0.5px solid lightgray;"></p>
 
 
@@ -289,8 +290,10 @@ These are the functions we want at the ready in any module for development and d
 | **exp**            | Logs a standardized exception with a collapsible stack dump. | mcode.exp('message' or object, 'module name', 'exp object')                                               |
 | **expHtml**        | Generates standardized HTML for browser with a stack dump.   | mcode.expHtml('message' or object, 'module name', 'exp object')                                           |
 | **expobj**         | Logs standardized exception with an object and stack dump.   | mcode.expobj('object name', object, 'module name', 'exp object')                                          |
+| **expobjHtml**     | Generates standardized HTML with an object and  stack dump.  | mcode.expobjHtml('object name', object, 'module name', 'exp object')                                          |
 | **resx**           | Logs a standardized HTTP response and sends the response.    | mcode.resx(res, 'action', {code: 000, message: 'message', data: object, error: 'message'}, 'module name') |
 | **trace**          | Logs a standardized function call with a trace dump.         | mcode.trace('message' or object, 'module name')                                                           |
+| **traceHtml**      | Generates standardized HTML for function call with a trace.  | mcode.traceHtml('message' or object, 'module name')                                                           |
 | **logify**         | Converts a message or JSON into colorized text for log.      | mcode.logify('object or JSON string')                                                                     |
 | **logifyHtml**     | Converts a message or JSON into colorized text for Browser.  | mcode.logifyHtml('object or JSON string')                                                                  |
 | **simplify**       | Strips a string of BRACES, BRACKETS, QUOTES, etc.            | mcode.simplify('object or JSON string')                                                                   |
@@ -359,6 +362,13 @@ Contributor's names and contact info...
 
 ## Version History
 
+- v0.7.2
+  - Tweaked logging and HTML colorization for better visibility of certain data types in both VT and HTML modes.
+  - Added additional test cases to cover edge scenarios in JSON colorization and HTML output formatting.
+- v0.7.1
+  - Fixed a minor issue in logifyHtml() where certain special characters in strings were not being properly escaped for HTML output, which could lead to rendering issues in some browsers.
+  - Improved performance of logify() and logifyHtml() functions by optimizing the regular expressions used for parsing JSON strings, resulting in faster processing times for large JSON objects.
+  - Updated JSDoc comments for logify() and logifyHtml() to include examples of usage and clarify parameter types and return values.
 - v0.7.0
   - **Enhanced JSON Colorization**: Completely refined JSON output colorization in both VT (terminal) and HTML modes with type-specific color schemes.
   - **Type-Specific Colors**: Different colors for strings (cyan), integers (blue), floats (green), BigInt (magenta), booleans (lime/red), null (gray), keys (white), and punctuation (white).

@@ -252,6 +252,7 @@ const mcode = {
         dbug: (theme === 'dark') ? '\x1b[97m' : '\x1b[37m',  // white
 
         // custom JSON colors -- see 'logify()' for use
+        punc: '\x1b[96m\x1b[1m',  // string value - CYAN, BOLD
         key: '\x1b[97m',  // key name - WHITE
         string: '\x1b[96m',  // string value - CYAN
         integer: '\x1b[94m',  // integer value - BLUE
@@ -275,8 +276,8 @@ const mcode = {
 
         // common effects, HTML inline styles
         reset: '</span>',
-        bold: '<span style="font-weight: bold;">',
-        bright: '<span style="font-weight: bold;">',
+        bold: '<span style="font-weight: 600;">',
+        bright: '<span style="font-weight: 600;">',
         dim: '<span style="opacity: 0.6;">',
         faint: '<span style="opacity: 0.6;">',
         italic: '<span style="font-style: italic;">',
@@ -327,15 +328,16 @@ const mcode = {
         dbug: (theme === 'dark') ? '<span style="color: #f8f9fa;">' : '<span style="color: #212529;">',  // white/black
 
         // custom JSON colors -- see 'logifyHtml()' for use
-        key: '<span style="color: #f8f9fa;">',  // key name - WHITE
-        string: '<span style="color: #2b92a0ff;">',  // string value - CYAN
-        integer: '<span style="color: #8bd6ffff;">',  // integer value - BLUE
-        real: '<span style="color: #a0ff86;">',  // floating point value - GREEN
-        bigint: '<span style="color: #cf86ff;">',  // bigint value - MAGENTA
-        true: '<span style="color: #00ff00;">',  // boolean true - LIME
-        false: '<span style="color: #ff0000;">',  // boolean false - RED
-        null: '<span style="color: #7c7c7c;">',  // null value - GRAY
-        value: '<span style="color: #ffbf00;">',  // fallback for other values - ORANGE
+        punc: '<span style="font-weight: 500; color: #00ffff;">',  // punctuation - CYAN, BOLD
+        key: '<span style="font-weight: 300; color: #f8f9fa;">',  // key name - WHITE
+        string: '<span style="font-weight: 500; color: #00cccc;">',  // string value - CYAN, DARKER
+        integer: '<span style="font-weight: 600; color: #8bd6ffff;">',  // integer value - BLUE
+        real: '<span style="font-weight: 600; color: #a0ff86;">',  // floating point value - GREEN
+        bigint: '<span style="font-weight: 600; color: #cf86ff;">',  // bigint value - MAGENTA
+        true: '<span style="font-weight: 600; color: #00ff00;">',  // boolean true - LIME
+        false: '<span style="font-weight: 600; color: #ff0000;">',  // boolean false - RED
+        null: '<span style="font-weight: 600; color: #7c7c7c;">',  // null value - GRAY
+        value: '<span style="font-weight: 600; color: #ffbf00;">',  // fallback for other values - ORANGE
         nl: '<br/>'  // newline
     },
 
@@ -477,12 +479,12 @@ const mcode = {
         // flatten the message object to strings for logging...
         if (_data.isArray(message))
         {
-            logifiedMessage += `{array}${vx.nl}${vx.code}[${vx.nl}`;
+            logifiedMessage += `{array}${vx.nl}${vx.punc}[${vx.nl}`;
 
             // loop through the array and log each element...
             message.forEach(element =>
             {
-                logifiedMessage += mcode.colorizeLines(mcode.logify(mcode.logifyObject(element, vx), vx), vx.code, vx);
+                logifiedMessage += mcode.colorizeLines(mcode.logify(mcode.logifyObject(element, vx), vx), vx.punc, vx);
                 logifiedMessage += `,${vx.nl}`;
             });
             logifiedMessage += ']';
@@ -562,7 +564,7 @@ const mcode = {
             case '?':
             default:
                 sevText = 'undefined';
-                sevColor += vx.code;
+                sevColor += vx.punc;
                 logText.push(` ? ｢mcode｣: ${sevColor}❓ [${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor, vx)}'`);
                 break;
         }
@@ -610,13 +612,13 @@ const mcode = {
         if (vx === mcode.ht)
         {
             // Wrap HTML output in div with default code color
-            const codeColor = vx.code.match(/color:\s*([^;"]*)/)?.[1] || '#3bc9db';
+            const codeColor = vx.punc.match(/color:\s*([^;"]*)/)?.[1] || '#3bc9db';
             return `<div style="color: ${codeColor};">${output}</div>`;
         }
         else
         {
             // Set default code color for VT output
-            console.log(`${vx.code}${output}${vx.reset}`);
+            console.log(`${vx.punc}${output}${vx.reset}`);
             return status;  // for caller to use as needed
         }
     },
@@ -649,7 +651,7 @@ const mcode = {
         // flatten the message object to strings for logging...
         if (_data.isArray(obj))
         {
-            logifiedMessage += `${vx.code}{array}${vx.reset}${vx.nl}${vx.nl}${vx.code}${objName}: ${vx.reset}${vx.nl}${vx.code}[${vx.reset}${vx.nl}`;
+            logifiedMessage += `${vx.punc}{array}${vx.reset}${vx.nl}${vx.nl}${vx.punc}${objName}: ${vx.reset}${vx.nl}${vx.punc}[${vx.reset}${vx.nl}`;
 
             // loop through the array and log each element...
             obj.forEach(element =>
@@ -693,21 +695,21 @@ const mcode = {
                 }
 
                 logifiedMessage += colorizedElement;
-                logifiedMessage += `${vx.code},${vx.reset}${vx.nl}`;
+                logifiedMessage += `${vx.punc},${vx.reset}${vx.nl}`;
             });
-            logifiedMessage += `${vx.code}]${vx.reset}`;
+            logifiedMessage += `${vx.punc}]${vx.reset}`;
         }
         else if (_data.isObject(obj))
         {
-            logifiedMessage = `${vx.code}{${(typeof obj)}}${vx.reset}${vx.nl}${vx.nl}${vx.code}${objName}:${vx.reset}${vx.nl}` + mcode.logify(mcode.logifyObject(obj, vx), vx);
+            logifiedMessage = `${vx.punc}{${(typeof obj)}}${vx.reset}${vx.nl}${vx.nl}${vx.punc}${objName}:${vx.reset}${vx.nl}` + mcode.logify(mcode.logifyObject(obj, vx), vx);
         }
         else if (_data.isJson(obj))
         {
-            logifiedMessage = `${vx.code}{json}${vx.reset}${vx.nl}${vx.nl}${vx.code}${objName}:${vx.reset}${vx.nl}` + mcode.logify(mcode.logifyObject(obj, vx), vx);
+            logifiedMessage = `${vx.punc}{json}${vx.reset}${vx.nl}${vx.nl}${vx.punc}${objName}:${vx.reset}${vx.nl}` + mcode.logify(mcode.logifyObject(obj, vx), vx);
         }
         else
         {
-            logifiedMessage = `${vx.code}{${(typeof obj)}}${vx.reset}${vx.nl}${vx.nl}${vx.code}${objName}: ${vx.reset}` + obj;
+            logifiedMessage = `${vx.punc}{${(typeof obj)}}${vx.reset}${vx.nl}${vx.nl}${vx.punc}${objName}: ${vx.reset}` + obj;
         }
 
         const [appModule, moduleLine] = this.getFrom(source);
@@ -737,13 +739,13 @@ const mcode = {
         if (vx === mcode.ht)
         {
             // Wrap HTML output in div with default code color using !important to override nested spans
-            const codeColor = vx.code.match(/color:\s*([^;"]*)/)?.[1] || '#3bc9db';
+            const codeColor = vx.punc.match(/color:\s*([^;"]*)/)?.[1] || '#3bc9db';
             return `<div style="color: ${codeColor} !important;">${output}</div>`;
         }
         else
         {
             // Set default code color for VT output
-            console.log(`${vx.code}${output}${vx.reset}`);
+            console.log(`${vx.punc}${output}${vx.reset}`);
         }
     },
 
@@ -823,13 +825,13 @@ const mcode = {
             else
             {
                 // treat as an Object, not a stack trace and show in default colors...
-                logifiedException = `${vx.reset}` + mcode.colorizeLines(mcode.logify(mcode.logifyObject(exception), vx), vx.code);
+                logifiedException = `${vx.reset}` + mcode.colorizeLines(mcode.logify(mcode.logifyObject(exception), vx), vx.punc);
             }
         }
         else if (_data.isJson(exception))
         {
             // treat as JSON, not a stack trace and show in default colors...
-            logifiedException = `${vx.reset}` + mcode.colorizeLines(mcode.logify(mcode.logifyObject(exception), vx), vx.code);
+            logifiedException = `${vx.reset}` + mcode.colorizeLines(mcode.logify(mcode.logifyObject(exception), vx), vx.punc);
         }
         else
         {
@@ -873,7 +875,7 @@ const mcode = {
             const output = logText.join('');
             if (vx === mcode.ht)
             {
-                const codeColor = vx.code.match(/color:\s*([^;"]*)/)?.[1] || '#3bc9db';
+                const codeColor = vx.punc.match(/color:\s*([^;"]*)/)?.[1] || '#3bc9db';
                 return `<div style="color: ${codeColor};">${output}</div>`;
             }
             else
@@ -903,7 +905,7 @@ const mcode = {
             const output = logText.join('');
             if (vx === mcode.ht)
             {
-                const codeColor = vx.code.match(/color:\s*([^;"]*)/)?.[1] || '#3bc9db';
+                const codeColor = vx.punc.match(/color:\s*([^;"]*)/)?.[1] || '#3bc9db';
                 return `<div style="color: ${codeColor};">${output}</div>`;
             }
             else
@@ -944,27 +946,27 @@ const mcode = {
         // flatten the message object to strings for logging...
         if (_data.isArray(obj))
         {
-            logifiedMessage += `{array}${vx.nl}${vx.nl}${vx.code}${objName}: ${vx.nl}[${vx.nl}`;
+            logifiedMessage += `{array}${vx.nl}${vx.nl}${vx.punc}${objName}: ${vx.nl}[${vx.nl}`;
 
             // loop through the array and log each element...
             obj.forEach(element =>
             {
-                logifiedMessage += mcode.colorizeLines(mcode.logify(mcode.logifyObject(element), vx), vx.code);
+                logifiedMessage += mcode.colorizeLines(mcode.logify(mcode.logifyObject(element), vx), vx.punc);
                 logifiedMessage += `,${vx.nl}`;
             });
             logifiedMessage += ']';
         }
         else if (_data.isObject(obj))
         {
-            logifiedMessage = `{${(typeof obj)}}${vx.nl}${vx.nl}${vx.code}${objName}:${vx.nl}` + mcode.logify(mcode.logifyObject(obj), vx);
+            logifiedMessage = `{${(typeof obj)}}${vx.nl}${vx.nl}${vx.punc}${objName}:${vx.nl}` + mcode.logify(mcode.logifyObject(obj), vx);
         }
         else if (_data.isJson(obj))
         {
-            logifiedMessage = `{json}${vx.nl}${vx.nl}${vx.code}${objName}:${vx.nl}` + mcode.logify(mcode.logifyObject(obj), vx);
+            logifiedMessage = `{json}${vx.nl}${vx.nl}${vx.punc}${objName}:${vx.nl}` + mcode.logify(mcode.logifyObject(obj), vx);
         }
         else
         {
-            logifiedMessage = `{${(typeof obj)}}${vx.nl}${vx.nl}${vx.code}${objName}: ` + obj;
+            logifiedMessage = `{${(typeof obj)}}${vx.nl}${vx.nl}${vx.punc}${objName}: ` + obj;
         }
 
         // flatten the exception object to strings for logging...
@@ -979,12 +981,12 @@ const mcode = {
             }
             else
             {
-                logifiedException = `${vx.reset}` + mcode.colorizeLines(mcode.logify(mcode.logifyObject(exception), vx), vx.code);
+                logifiedException = `${vx.reset}` + mcode.colorizeLines(mcode.logify(mcode.logifyObject(exception), vx), vx.punc);
             }
         }
         else if (_data.isJson(exception))
         {
-            logifiedException = mcode.colorizeLines(mcode.logify(mcode.logifyObject(exception), vx), vx.code);
+            logifiedException = mcode.colorizeLines(mcode.logify(mcode.logifyObject(exception), vx), vx.punc);
         }
         else
         {
@@ -1027,7 +1029,7 @@ const mcode = {
             const output = logText.join('');
             if (vx === mcode.ht)
             {
-                const codeColor = vx.code.match(/color:\s*([^;"]*)/)?.[1] || '#3bc9db';
+                const codeColor = vx.punc.match(/color:\s*([^;"]*)/)?.[1] || '#3bc9db';
                 return `<div style="color: ${codeColor};">${output}</div>`;
             }
             else
@@ -1057,7 +1059,7 @@ const mcode = {
             const output = logText.join('');
             if (vx === mcode.ht)
             {
-                const codeColor = vx.code.match(/color:\s*([^;"]*)/)?.[1] || '#3bc9db';
+                const codeColor = vx.punc.match(/color:\s*([^;"]*)/)?.[1] || '#3bc9db';
                 return `<div style="color: ${codeColor};">${output}</div>`;
             }
             else
@@ -1199,7 +1201,7 @@ const mcode = {
 
         const [appModule, moduleLine] = this.getFrom(source);
 
-        let sevColor = vx.reset + vx.code;
+        let sevColor = vx.reset + vx.punc;
 
         // Function calls are always logged as 'Info'
         logText.push(`${vx.reset}${vx.dim}++${vx.nl}`);
@@ -1220,7 +1222,7 @@ const mcode = {
         const output = logText.join('');
         if (vx === mcode.ht)
         {
-            const codeColor = vx.code.match(/color:\s*([^;"]*)/)?.[1] || '#3bc9db';
+            const codeColor = vx.punc.match(/color:\s*([^;"]*)/)?.[1] || '#3bc9db';
             return `<div style="color: ${codeColor};">${output}</div>`;
         }
         else
@@ -1643,7 +1645,7 @@ const mcode = {
             switch (cc)
             {
                 case '{':
-                    logText.push(indent() + `${vx.code}{${vx.reset}`);
+                    logText.push(indent() + `${vx.punc}{${vx.reset}`);
                     lineEmpty = false;
                     tabStop++;
                     logText.push(indent());
@@ -1651,7 +1653,7 @@ const mcode = {
                     expectingValue = false;  // objects start with keys, not values
                     break;
                 case '[':
-                    logText.push(indent() + `${vx.code}[${vx.reset}`);
+                    logText.push(indent() + `${vx.punc}[${vx.reset}`);
                     lineEmpty = false;
                     tabStop++;
                     logText.push(indent());
@@ -1660,7 +1662,7 @@ const mcode = {
                     break;
                 case '}':
                     tabStop--;
-                    logText.push(indent() + `${vx.code}}${vx.reset}`);
+                    logText.push(indent() + `${vx.punc}}${vx.reset}`);
                     lineEmpty = false;
                     inJson = tabStop > 0;
                     contextStack.pop();  // pop object context
@@ -1670,7 +1672,7 @@ const mcode = {
                     break;
                 case ']':
                     tabStop--;
-                    logText.push(indent() + `${vx.code}]${vx.reset}`);
+                    logText.push(indent() + `${vx.punc}]${vx.reset}`);
                     lineEmpty = false;
                     contextStack.pop();  // pop array context
                     // Reset expectingValue based on current context
@@ -1678,7 +1680,7 @@ const mcode = {
                     expectingValue = currentContextAfterArray === 'array';
                     break;
                 case ',':
-                    logText.push(`${vx.reset}${vx.code},${vx.reset}` + indent());
+                    logText.push(`${vx.reset}${vx.punc},${vx.reset}` + indent());
                     lineEmpty = false;
                     // In array context, we're still expecting values after a comma
                     // In object context, we're expecting a key after a comma
@@ -1686,7 +1688,7 @@ const mcode = {
                     expectingValue = currentCtx === 'array';
                     break;
                 case ':':
-                    logText.push(`${vx.code}:${vx.reset} `);
+                    logText.push(`${vx.punc}:${vx.reset} `);
                     lineEmpty = false;
                     expectingValue = true;
                     break;
