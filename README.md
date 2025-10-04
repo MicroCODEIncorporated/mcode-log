@@ -165,6 +165,9 @@ npm link mcode-log
 | **Boolean (false)** | Red | Red  | False values |
 | **Null** | Gray | Gray  | Null values |
 
+<p align="left"><img src=".\.github\images\mcode-log-color-json.png" width="720" title="Backend exception..." style="border: 0.5px solid lightgray;"></p>
+
+
 #### Enhanced Features
 
 - **Intelligent Type Detection**: Automatically detects and colors different data types in JSON output
@@ -271,8 +274,11 @@ These are the functions we want at the ready in any module for development and d
 | ------------------ | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
 | **ready**          | Logs 'mcode-log' with version #, mode, and theme.            | mcode.ready()                                                                                             |
 | **vt**             | The definition of standard VT52/100/200 display codes.       | mcode.vt.dim, mcode.vt.bright, mcode.vt.fg.red, mcode.vt.bg.white, etc.                                   |
+| **ht**             | The definition of VT-like HTML inline styles.                | mcode.ht.dim, mcode.ht.bright, mcode.ht.fg.red, mcode.ht.bg.white, etc.                                   |
 | **log**            | Logs a standardized message into the console with objects.   | mcode.log('message' or object, 'module name', 'severity')                                                 |
-| **log, logobj**    | Logs an object of any kind into the console with a name.     | mcode.logobj('object name', object, 'module name')                                                        |
+| **logHtml**        | Generates standardized HTML for the browser with objects.    | mcode.logHtml('message' or object, 'module name', 'severity')                                                 |
+| **logobj**         | Logs an object of any kind into the console with a name.     | mcode.logobj('object name', object, 'module name')                                                        |
+| **logobjHtml**     | Generates standardized HTML for the browser with a name.     | mcode.logobjHtml('object name', object, 'module name')                                                        |
 | **info**           | Short call form of 'mcode.log(msg, src, 'info');             | mcode.info('message' or object, 'module name')                                                            |
 | **warn**           | Short call form of 'mcode.log(msg, src, 'warn');             | mcode.warn('message' or object, 'module name')                                                            |
 | **error**          | Short call form of 'mcode.log(msg, src, 'error');            | mcode.error('message' or object, 'module name')                                                           |
@@ -281,10 +287,12 @@ These are the functions we want at the ready in any module for development and d
 | **done**           | Short call form of 'mcode.log(msg, src, 'success');          | mcode.done('message' or object, 'module name')                                                            |
 | **debug**          | Short call form of 'mcode.log(msg, src, 'debug');            | mcode.debug('message' or object, 'module name')                                                           |
 | **exp**            | Logs a standardized exception with a collapsible stack dump. | mcode.exp('message' or object, 'module name', 'exp object')                                               |
-| **exp, expobj**    | Logs standardized exception with an object and stack dump.   | mcode.expobj('object name', object, 'module name', 'exp object')                                          |
+| **expHtml**        | Generates standardized HTML for browser with a stack dump.   | mcode.expHtml('message' or object, 'module name', 'exp object')                                           |
+| **expobj**         | Logs standardized exception with an object and stack dump.   | mcode.expobj('object name', object, 'module name', 'exp object')                                          |
 | **resx**           | Logs a standardized HTTP response and sends the response.    | mcode.resx(res, 'action', {code: 000, message: 'message', data: object, error: 'message'}, 'module name') |
 | **trace**          | Logs a standardized function call with a trace dump.         | mcode.trace('message' or object, 'module name')                                                           |
-| **logify**         | Converts a message or JSON into colorized text for log (v0.7.0: enhanced with type-specific colors). | mcode.logify('object or JSON string')                                                                     |
+| **logify**         | Converts a message or JSON into colorized text for log.      | mcode.logify('object or JSON string')                                                                     |
+| **logifyHtml**     | Converts a message or JSON into colorized text for Browser.  | mcode.logifyHtml('object or JSON string')                                                                  |
 | **simplify**       | Strips a string of BRACES, BRACKETS, QUOTES, etc.            | mcode.simplify('object or JSON string')                                                                   |
 | **logifyObject**   | Converts an Object into text appropriate for log.            | mcode.logifyObject('object')                                                                              |
 | **simplifyObject** | Converts an Object to string less BRACES, BRACKETS, etc.     | mcode.simplifyObject('object')                                                                            |
