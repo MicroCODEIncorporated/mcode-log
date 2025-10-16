@@ -92,6 +92,9 @@
  *      24-Apr-2025   TJM-MCODE  {0021}   0.6.09 - added support for UUID 'Event Id' as optional data to be logged for traceability.
  *      03-Oct-2025   TJM-MCODE  {0022}   0.7.00 - added support for HTML output thru the use of a new 'ht' table used in
  *                                                 combination with the existing 'vt' table.
+ *      16-Oct-2025   TJM-MCODE  {0023}   0.7.04 - fixed logify() to stop inserting blank line before and between JSON objects.
+ *                                                 Also fixed logObj() to always use logifyObject(), even for simple arrays to
+ *                                                 correct a unique indentation issue.
  *
  *
  *
@@ -268,7 +271,7 @@ const mcode = {
     /**
      * @const ht
      * @memberof mcode
-     * @desc HTML inline styles constants for generating HTML with colorized appearance similar to the VT ANSI colors.
+     * @desc HTML inline style constants for generating HTML with colorized appearance similar to the VT ANSI colors.
      */
     ht:
     {
@@ -334,8 +337,8 @@ const mcode = {
         integer: '<span style="font-weight: 600; color: #8bd6ffff;">',  // integer value - BLUE
         real: '<span style="font-weight: 600; color: #a0ff86;">',  // floating point value - GREEN
         bigint: '<span style="font-weight: 600; color: #cf86ff;">',  // bigint value - MAGENTA
-        true: '<span style="font-weight: 600; color: #00cc00ff;">',  // boolean true - LIME
-        false: '<span style="font-weight: 600; color: #cc0000ff;">',  // boolean false - RED
+        true: '<span style="font-weight: 600; color: #00ff00;">',  // boolean true - LIME
+        false: '<span style="font-weight: 600; color: #ff0000;">',  // boolean false - RED
         null: '<span style="font-weight: 600; color: #7c7c7c;">',  // null value - GRAY
         value: '<span style="font-weight: 600; color: #ffbf00;">',  // fallback for other values - ORANGE
         nl: '<br/>'  // newline
@@ -479,15 +482,7 @@ const mcode = {
         // flatten the message object to strings for logging...
         if (_data.isArray(message))
         {
-            logifiedMessage += `{array}${vx.nl}${vx.punc}[${vx.nl}`;
-
-            // loop through the array and log each element...
-            message.forEach(element =>
-            {
-                logifiedMessage += mcode.colorizeLines(mcode.logify(mcode.logifyObject(element, vx), vx), vx.punc, vx);
-                logifiedMessage += `,${vx.nl}`;
-            });
-            logifiedMessage += ']';
+            logifiedMessage = `${vx.nl}` + mcode.logify(mcode.logifyObject(message, vx), vx);
         }
         else if (_data.isObject(message))
         {
@@ -495,7 +490,7 @@ const mcode = {
         }
         else if (_data.isJson(message))
         {
-            logifiedMessage = `${vx.nl}` + mcode.logify(mcode.logifyObject(message), vx);
+            logifiedMessage = `${vx.nl}` + mcode.logify(mcode.logifyObject(message, vx), vx);
         }
         else if (_data.isFunction(message))
         {
@@ -648,56 +643,10 @@ const mcode = {
         let logText = [];  // build the response as an array for speed
         let logifiedMessage = '';
 
-        // flatten the message object to strings for logging...
+        // 'Logifiy' all objects passed to this function...
         if (_data.isArray(obj))
         {
-            logifiedMessage += `${vx.punc}{array}${vx.reset}${vx.nl}${vx.nl}${vx.punc}${objName}: ${vx.reset}${vx.nl}${vx.punc}[${vx.reset}${vx.nl}`;
-
-            // loop through the array and log each element...
-            obj.forEach(element =>
-            {
-                const logifiedElement = mcode.logifyObject(element, vx);
-
-                // Apply appropriate color based on data type for primitive values
-                let colorizedElement;
-                if (typeof element === 'number' && Number.isInteger(element))
-                {
-                    colorizedElement = `${vx.integer}${logifiedElement}${vx.reset}`;
-                }
-                else if (typeof element === 'number')
-                {
-                    colorizedElement = `${vx.real}${logifiedElement}${vx.reset}`;
-                }
-                else if (typeof element === 'string')
-                {
-                    colorizedElement = `${vx.string}${logifiedElement}${vx.reset}`;
-                }
-                else if (typeof element === 'boolean' && element === true)
-                {
-                    colorizedElement = `${vx.true}${logifiedElement}${vx.reset}`;
-                }
-                else if (typeof element === 'boolean' && element === false)
-                {
-                    colorizedElement = `${vx.false}${logifiedElement}${vx.reset}`;
-                }
-                else if (element === null)
-                {
-                    colorizedElement = `${vx.null}${logifiedElement}${vx.reset}`;
-                }
-                else if (typeof element === 'bigint')
-                {
-                    colorizedElement = `${vx.bigint}${logifiedElement}${vx.reset}`;
-                }
-                else
-                {
-                    // For complex objects, use the regular logify process
-                    colorizedElement = mcode.logify(logifiedElement, vx);
-                }
-
-                logifiedMessage += colorizedElement;
-                logifiedMessage += `${vx.punc},${vx.reset}${vx.nl}`;
-            });
-            logifiedMessage += `${vx.punc}]${vx.reset}`;
+            logifiedMessage = `${vx.punc}{array}${vx.reset}${vx.nl}${vx.nl}${vx.punc}${objName}:${vx.reset}${vx.nl}` + mcode.logify(mcode.logifyObject(obj, vx), vx);
         }
         else if (_data.isObject(obj))
         {
@@ -946,15 +895,7 @@ const mcode = {
         // flatten the message object to strings for logging...
         if (_data.isArray(obj))
         {
-            logifiedMessage += `{array}${vx.nl}${vx.nl}${vx.punc}${objName}: ${vx.nl}[${vx.nl}`;
-
-            // loop through the array and log each element...
-            obj.forEach(element =>
-            {
-                logifiedMessage += mcode.colorizeLines(mcode.logify(mcode.logifyObject(element), vx), vx.punc);
-                logifiedMessage += `,${vx.nl}`;
-            });
-            logifiedMessage += ']';
+            logifiedMessage = `{array}${vx.nl}${vx.nl}${vx.punc}${objName}:${vx.nl}` + mcode.logify(mcode.logifyObject(obj), vx);
         }
         else if (_data.isObject(obj))
         {
@@ -1186,7 +1127,11 @@ const mcode = {
         let logifiedMessage = '';
 
         // flatten the message object to strings for logging...
-        if (_data.isObject(message))
+        if (_data.isArray(message))
+        {
+            logifiedMessage = `${vx.nl}` + mcode.logify(mcode.logifyObject(message), vx);
+        }
+        else if (_data.isObject(message))
         {
             logifiedMessage = `${vx.nl}` + mcode.logify(mcode.logifyObject(message), vx);
         }
@@ -1355,7 +1300,7 @@ const mcode = {
     },
     logify: function (textToLogify, vx = mcode.vt)
     {
-        let inJson = false;  // start formatting when we hit the first '{'
+        let inJson = false;  // start formatting when we hit the first '{' or '['
         let inValue = false;  // handle 'true, false, null, or number' as-is
         let inString = false;  // handle "quoted strings" as-is
         let inLiteral = false;  // take internal text as-is
@@ -1542,10 +1487,10 @@ const mcode = {
                 continue;
             }
 
-            if (!inString && !inJson && cc === '{')
+            if (!inString && !inJson && (cc === '{' || cc === '['))
             {
                 inJson = true;
-                --i;  // reprocess '{' as JSON
+                --i;  // reprocess '{' or '[' as JSON
                 continue;
             }
 
@@ -1645,6 +1590,7 @@ const mcode = {
             switch (cc)
             {
                 case '{':
+                    lineEmpty = true;  // prevent blank line before/between { JSON Objects }
                     logText.push(indent() + `${vx.punc}{${vx.reset}`);
                     lineEmpty = false;
                     tabStop++;
@@ -1658,7 +1604,7 @@ const mcode = {
                     tabStop++;
                     logText.push(indent());
                     contextStack.push('array');   // push array context
-                    expectingValue = true;  // arrays contain values, not key-value pairs
+                    expectingValue = true;  // arrays contain values (an object being a value), not key-value pairs
                     break;
                 case '}':
                     tabStop--;

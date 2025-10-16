@@ -361,9 +361,12 @@ Contributor's names and contact info...
 
 ## Version History
 
+- 0.7.4
+  - Fixed logify() to stop inserting blank line before and between JSON objects.
+  - Fixed logObj(), expObj, trace() to always use logifyObject(), even for simple arrays to correct a unique indentation issue.
+  - Added test cases to cover empty string and multiple JSON objects in logify() and log.
 - 0.7.3
   - Corrected crash condition in colorizeLines() when passed an empty string.
-  - Toned down the brightness of the HTML colorization of booleans for better appearance in dark mode terminals.
 - v0.7.2
   - Tweaked logging and HTML colorization for better visibility of certain data types in both VT and HTML modes.
   - Added additional test cases to cover edge scenarios in JSON colorization and HTML output formatting.

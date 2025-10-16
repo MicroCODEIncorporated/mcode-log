@@ -816,6 +816,44 @@ describe('mcode.html', () =>
         });
     });
 
+    describe('VT logify formatting', () =>
+    {
+        it('should not emit blank lines when formatting JSON objects', () =>
+        {
+            const nestedObject = {
+                alpha: {
+                    first: {value: 1},
+                    second: {value: 2}
+                },
+                beta: {
+                    inner: {flag: true}
+                },
+                gamma: {
+                    list: [1, 2, 3],
+                    empty: null,
+                    big: 12345678901234567890n,
+                    biggerList: [1, "two", 3.0, false, null, 123n],
+                    objectArray: [
+                        {name: 'Alice', age: 30},
+                        {name: 'Bob', age: 25}
+                    ]
+                }
+            };
+            mcode.log(nestedObject); // Log normally to console for visual check
+            const vtResult = mcode.logify(mcode.logifyObject(nestedObject, mcode.vt), mcode.vt);
+            const vtLines = vtResult.split(mcode.vt.nl);
+
+            vtLines.forEach((line, idx) =>
+            {
+                const visible = line.replace(/\u001b\[[0-9;]*m/g, '').trim();
+                if (visible.length === 0)
+                {
+                    throw new Error(`Detected blank VT output line (index ${idx}).`);
+                }
+            });
+        });
+    });
+
     describe('HTML exception and trace functions', () =>
     {
         it('expHtml should return HTML formatted exception log', () =>
@@ -913,15 +951,219 @@ describe('mcode.html', () =>
 
             it('should handle arrays with mixed data types correctly', () =>
             {
-                const mixedArray = [42, 3.14, "string", true, false, null, 123n];
+                const mixedArray1 = [42, 3.14, "string", true, false, null, {data: "data 1 2 3 4 5"}, 123n];
 
-                mcode.logobj('Mixed Array Test', mixedArray, MODULE_NAME);
+                mcode.logobj('Mixed Array Test #1', mixedArray1, MODULE_NAME);
+
+                const mixedArray2 = [{data1: "data 1 2 3 4 5"}, {data2: "data 1 2 3 4 5"}, {data3: "data 1 2 3 4 5"}];
+
+                mcode.logobj('Object Array Test #2', mixedArray2, MODULE_NAME);
+
+                const mixedArray3 = [
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "object": {
+                            "column1": "value1",
+                            "column2": true,
+                            "column3": 333,
+                            "column4": "value4"
+                        }
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "column4": "value4"
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "column4": "value4"
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "column4": "value4",
+                        "object": {
+                            "column1": "value1",
+                            "column2": true,
+                            "column3": 333,
+                            "column4": "value4"
+                        }
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 33.3,
+                        "column4": "value4"
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 3.33,
+                        "column4": "value4"
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "column4": "value4"
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333.333,
+                        "column4": null,
+                        "object": {
+                            "column1": "value1",
+                            "column2": true,
+                            "column3": 333,
+                            "column4": "value4"
+                        }
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "column4": "value4"
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "column4": "value4"
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "column4": "value4"
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "column4": "value4",
+                        "object": {
+                            "column1": "value1",
+                            "column2": true,
+                            "column3": 333,
+                            "column4": "value4"
+                        }
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "column4": "value4"
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "column4": "value4"
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "column4": "value4"
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "column4": "value4",
+                        "object": {
+                            "column1": "value1",
+                            "column2": true,
+                            "column3": 333,
+                            "column4": "value4"
+                        }
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "column4": "value4"
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "column4": "value4"
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "column4": "value4"
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "column4": "value4",
+                        "object": {
+                            "column1": "value1",
+                            "column2": true,
+                            "column3": 333,
+                            "column4": "value4"
+                        }
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "column4": "value4"
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "column4": "value4"
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "column4": "value4"
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "column4": "value4",
+                        "object": {
+                            "column1": "value1",
+                            "column2": true,
+                            "column3": 333,
+                            "column4": "value4"
+                        }
+                    },
+                    {
+                        "column1": "value1",
+                        "column2": true,
+                        "column3": 333,
+                        "column4": "value4"
+                    }
+                ];
+
+                mcode.logobj('Object Array Test #3', mixedArray3, MODULE_NAME);
+
+                mcode.log(mixedArray3);
 
                 const logOutput = consoleSpy.mock.calls.join('');
 
                 // Check that array is properly structured and contains the values
                 expect(logOutput).toContain('{array}');
-                expect(logOutput).toContain('Mixed Array Test:');
+                expect(logOutput).toContain('Mixed Array Test #1:');
+                expect(logOutput).toContain('Object Array Test #2:');
+                expect(logOutput).toContain('Object Array Test #3:');
                 expect(logOutput).toContain('[');
                 expect(logOutput).toContain(']');
 
@@ -997,8 +1239,8 @@ describe('mcode.html', () =>
                 expect(htmlResult).toContain('<span style="font-weight: 600; color: #a0ff86;">3.14'); // green real
 
                 // Test boolean colors
-                expect(htmlResult).toContain('<span style="font-weight: 600; color: #00cc00ff;">true'); // lime true
-                expect(htmlResult).toContain('<span style="font-weight: 600; color: #cc0000ff;">false'); // red false
+                expect(htmlResult).toContain('<span style="font-weight: 600; color: #00ff00;">true'); // lime true
+                expect(htmlResult).toContain('<span style="font-weight: 600; color: #ff0000;">false'); // red false
 
                 // Test null color (gray in HTML)
                 expect(htmlResult).toContain('<span style="font-weight: 600; color: #7c7c7c;">null'); // gray null
@@ -1155,11 +1397,11 @@ describe('mcode.html', () =>
 
                 // Boolean true consistency
                 expect(vtOutput).toContain('\x1b[92mtrue'); // VT lime
-                expect(htmlOutput).toContain('<span style="font-weight: 600; color: #00cc00ff;">true'); // HTML lime
+                expect(htmlOutput).toContain('<span style="font-weight: 600; color: #00ff00;">true'); // HTML lime
 
                 // Boolean false consistency
                 expect(vtOutput).toContain('\x1b[91mfalse'); // VT red
-                expect(htmlOutput).toContain('<span style="font-weight: 600; color: #cc0000ff;">false'); // HTML red
+                expect(htmlOutput).toContain('<span style="font-weight: 600; color: #ff0000;">false'); // HTML red
 
                 // Null consistency
                 expect(vtOutput).toContain('\x1b[90mnull'); // VT gray
