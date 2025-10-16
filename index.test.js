@@ -710,7 +710,7 @@ describe('mcode.html', () =>
         {
             expect(mcode.ht).toBeDefined();
             expect(mcode.ht.reset).toBe('</span>');
-            expect(mcode.ht.bold).toBe('<span style="font-weight: bold;">');
+            expect(mcode.ht.bold).toBe('<span style="font-weight: 600;">');
             expect(mcode.ht.fg.red).toBe('<span style="color: red;">');
             expect(mcode.ht.nl).toBe('<br/>');
         });
@@ -883,10 +883,10 @@ describe('mcode.html', () =>
 
                 const logOutput = consoleSpy.mock.calls.join('');
 
-                // Test punctuation colors (cyan code color in VT)
-                expect(logOutput).toContain('\x1b[96m{'); // cyan code punctuation
-                expect(logOutput).toContain('\x1b[96m['); // cyan code punctuation
-                expect(logOutput).toContain('\x1b[96m:'); // cyan code punctuation
+                // Test punctuation colors (cyan + bold punc color in VT)
+                expect(logOutput).toContain('\x1b[96m\x1b[1m{'); // cyan bold punc punctuation
+                expect(logOutput).toContain('\x1b[96m\x1b[1m['); // cyan bold punc punctuation
+                expect(logOutput).toContain('\x1b[96m\x1b[1m:'); // cyan bold punc punctuation
 
                 // Test key colors (white in VT)
                 expect(logOutput).toContain('\x1b[97mstringValue'); // white key
@@ -979,32 +979,32 @@ describe('mcode.html', () =>
 
                 const htmlResult = mcode.logobjHtml('HTML Color Test', testObj, MODULE_NAME);
 
-                // Test punctuation colors (cyan code color in HTML)
-                expect(htmlResult).toContain('<span style="color: #3bc9db;">{'); // cyan code punctuation
-                expect(htmlResult).toContain('<span style="color: #3bc9db;">['); // cyan code punctuation
-                expect(htmlResult).toContain('<span style="color: #3bc9db;">:'); // cyan code punctuation
+                // Test punctuation colors (cyan punc color in HTML)
+                expect(htmlResult).toContain('<span style="font-weight: 500; color: #00ffff;">{'); // cyan punc punctuation
+                expect(htmlResult).toContain('<span style="font-weight: 500; color: #00ffff;">['); // cyan punc punctuation
+                expect(htmlResult).toContain('<span style="font-weight: 500; color: #00ffff;">:'); // cyan punc punctuation
 
                 // Test key colors (#f8f9fa in HTML)
-                expect(htmlResult).toContain('<span style="color: #f8f9fa;">stringValue'); // #f8f9fa key
+                expect(htmlResult).toContain('<span style="font-weight: 300; color: #f8f9fa;">stringValue'); // #f8f9fa key
 
                 // Test string colors (cyan in HTML)
-                expect(htmlResult).toContain('<span style="color: #2b92a0ff;">"Hello World"'); // cyan string
+                expect(htmlResult).toContain('<span style="font-weight: 500; color: #00cccc;">"Hello World"'); // cyan string
 
                 // Test integer colors (blue in HTML)
-                expect(htmlResult).toContain('<span style="color: #8bd6ffff;">42'); // blue integer
+                expect(htmlResult).toContain('<span style="font-weight: 600; color: #8bd6ffff;">42'); // blue integer
 
                 // Test real/float colors (green in HTML)
-                expect(htmlResult).toContain('<span style="color: #a0ff86;">3.14'); // green real
+                expect(htmlResult).toContain('<span style="font-weight: 600; color: #a0ff86;">3.14'); // green real
 
                 // Test boolean colors
-                expect(htmlResult).toContain('<span style="color: #00ff00;">true'); // lime true
-                expect(htmlResult).toContain('<span style="color: #ff0000;">false'); // red false
+                expect(htmlResult).toContain('<span style="font-weight: 600; color: #00cc00ff;">true'); // lime true
+                expect(htmlResult).toContain('<span style="font-weight: 600; color: #cc0000ff;">false'); // red false
 
                 // Test null color (gray in HTML)
-                expect(htmlResult).toContain('<span style="color: #7c7c7c;">null'); // gray null
+                expect(htmlResult).toContain('<span style="font-weight: 600; color: #7c7c7c;">null'); // gray null
 
                 // Test bigint color (magenta in HTML)
-                expect(htmlResult).toContain('<span style="color: #cf86ff;">123456789012345678901234567890n'); // magenta bigint
+                expect(htmlResult).toContain('<span style="font-weight: 600; color: #cf86ff;">123456789012345678901234567890n'); // magenta bigint
 
                 // Should not contain VT escape sequences
                 expect(htmlResult).not.toContain('\x1b');
@@ -1091,10 +1091,10 @@ describe('mcode.html', () =>
                 const logOutput = consoleSpy.mock.calls.join('');
 
                 // Should contain proper punctuation coloring
-                expect(logOutput).toContain('\x1b[96m['); // cyan code bracket
-                expect(logOutput).toContain('\x1b[96m]'); // cyan code bracket
-                expect(logOutput).toContain('\x1b[96m{'); // cyan code brace
-                expect(logOutput).toContain('\x1b[96m}'); // cyan code brace
+                expect(logOutput).toContain('\x1b[96m\x1b[1m['); // cyan bold punc bracket
+                expect(logOutput).toContain('\x1b[96m\x1b[1m]'); // cyan bold punc bracket
+                expect(logOutput).toContain('\x1b[96m\x1b[1m{'); // cyan bold punc brace
+                expect(logOutput).toContain('\x1b[96m\x1b[1m}'); // cyan bold punc brace
             });
 
             it('should handle special string values that look like other types', () =>
@@ -1143,27 +1143,27 @@ describe('mcode.html', () =>
 
                 // String value consistency
                 expect(vtOutput).toContain('\x1b[96m"test"'); // VT cyan
-                expect(htmlOutput).toContain('<span style="color: #2b92a0ff;">"test"'); // HTML cyan
+                expect(htmlOutput).toContain('<span style="font-weight: 500; color: #00cccc;">"test"'); // HTML cyan
 
                 // Integer consistency
                 expect(vtOutput).toContain('\x1b[94m123'); // VT blue
-                expect(htmlOutput).toContain('<span style="color: #8bd6ffff;">123'); // HTML blue
+                expect(htmlOutput).toContain('<span style="font-weight: 600; color: #8bd6ffff;">123'); // HTML blue
 
                 // Float consistency
                 expect(vtOutput).toContain('\x1b[92m45.67'); // VT green
-                expect(htmlOutput).toContain('<span style="color: #a0ff86;">45.67'); // HTML green
+                expect(htmlOutput).toContain('<span style="font-weight: 600; color: #a0ff86;">45.67'); // HTML green
 
                 // Boolean true consistency
                 expect(vtOutput).toContain('\x1b[92mtrue'); // VT lime
-                expect(htmlOutput).toContain('<span style="color: #00ff00;">true'); // HTML lime
+                expect(htmlOutput).toContain('<span style="font-weight: 600; color: #00cc00ff;">true'); // HTML lime
 
                 // Boolean false consistency
                 expect(vtOutput).toContain('\x1b[91mfalse'); // VT red
-                expect(htmlOutput).toContain('<span style="color: #ff0000;">false'); // HTML red
+                expect(htmlOutput).toContain('<span style="font-weight: 600; color: #cc0000ff;">false'); // HTML red
 
                 // Null consistency
                 expect(vtOutput).toContain('\x1b[90mnull'); // VT gray
-                expect(htmlOutput).toContain('<span style="color: #7c7c7c;">null'); // HTML gray
+                expect(htmlOutput).toContain('<span style="font-weight: 600; color: #7c7c7c;">null'); // HTML gray
             });
         });
     });

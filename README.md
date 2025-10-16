@@ -153,21 +153,20 @@ npm link mcode-log
 
 #### Color Scheme Mapping
 
-| Element Type | VT (Terminal) | HTML | Visual Effect |
-|-------------|---------------|------|---------------|
-| **Punctuation** | Cyan | Cyan | Brackets, braces, colons, commas |
-| **Key names** | White | White | Object property names |
-| **Strings** | Cyan | Dark Cyan  | Text values in quotes |
-| **Integers** | Blue | Blue  | Whole numbers |
-| **Floating point** | Green | Green  | Decimal numbers |
-| **BigInt** | Magenta | Magenta  | Large integers with 'n' suffix |
-| **Boolean (true)** | Lime | Lime  | True values |
-| **Boolean (false)** | Red | Red  | False values |
-| **Null** | Gray | Gray  | Null values |
+| Element Type        | VT (Terminal) | HTML      | Visual Effect                    |
+| ------------------- | ------------- | --------- | -------------------------------- |
+| **Punctuation**     | Cyan          | Cyan      | Brackets, braces, colons, commas |
+| **Key names**       | White         | White     | Object property names            |
+| **Strings**         | Cyan          | Dark Cyan | Text values in quotes            |
+| **Integers**        | Blue          | Blue      | Whole numbers                    |
+| **Floating point**  | Green         | Green     | Decimal numbers                  |
+| **BigInt**          | Magenta       | Magenta   | Large integers with 'n' suffix   |
+| **Boolean (true)**  | Lime          | Lime      | True values                      |
+| **Boolean (false)** | Red           | Red       | False values                     |
+| **Null**            | Gray          | Gray      | Null values                      |
 
 </br>
 <p align="left"><img src=".\.github\images\mcode-log-color-json.png" width="720" title="Backend exception..." style="border: 0.5px solid lightgray;"></p>
-
 
 #### Enhanced Features
 
@@ -181,30 +180,30 @@ npm link mcode-log
 ```javascript
 // Enhanced colorization automatically applied to all object logging
 const sampleData = {
-    name: "John Doe",        // String: cyan
-    age: 30,                 // Integer: blue
-    height: 5.75,            // Float: green
-    bigNumber: 123456789n,   // BigInt: magenta
-    isActive: true,          // Boolean true: lime
-    isDeleted: false,        // Boolean false: red
-    lastLogin: null          // Null: gray
+  name: "John Doe", // String: cyan
+  age: 30, // Integer: blue
+  height: 5.75, // Float: green
+  bigNumber: 123456789n, // BigInt: magenta
+  isActive: true, // Boolean true: lime
+  isDeleted: false, // Boolean false: red
+  lastLogin: null, // Null: gray
 };
 
 // Terminal colorization
-mcode.logobj('User Data', sampleData, 'user.js');
+mcode.logobj("User Data", sampleData, "user.js");
 
 // HTML colorization for web UIs
-const htmlOutput = mcode.logobjHtml('User Data', sampleData, 'user.js');
+const htmlOutput = mcode.logobjHtml("User Data", sampleData, "user.js");
 ```
 
 #### Output Example
 
 <p align="left"><img src=".\.github\images\mcode-log-html-json.png" width="720" title="JSON HTML output..." style="border: 0.5px solid lightgray;"></p>
 
-
 #### Test Coverage
 
 v0.7.0 includes **46 comprehensive test cases** covering:
+
 - All data type colorization scenarios
 - Mixed arrays and nested objects
 - Edge cases (negative numbers, scientific notation)
@@ -277,9 +276,9 @@ These are the functions we want at the ready in any module for development and d
 | **vt**             | The definition of standard VT52/100/200 display codes.       | mcode.vt.dim, mcode.vt.bright, mcode.vt.fg.red, mcode.vt.bg.white, etc.                                   |
 | **ht**             | The definition of VT-like HTML inline styles.                | mcode.ht.dim, mcode.ht.bright, mcode.ht.fg.red, mcode.ht.bg.white, etc.                                   |
 | **log**            | Logs a standardized message into the console with objects.   | mcode.log('message' or object, 'module name', 'severity')                                                 |
-| **logHtml**        | Generates standardized HTML for the browser with objects.    | mcode.logHtml('message' or object, 'module name', 'severity')                                                 |
+| **logHtml**        | Generates standardized HTML for the browser with objects.    | mcode.logHtml('message' or object, 'module name', 'severity')                                             |
 | **logobj**         | Logs an object of any kind into the console with a name.     | mcode.logobj('object name', object, 'module name')                                                        |
-| **logobjHtml**     | Generates standardized HTML for the browser with a name.     | mcode.logobjHtml('object name', object, 'module name')                                                        |
+| **logobjHtml**     | Generates standardized HTML for the browser with a name.     | mcode.logobjHtml('object name', object, 'module name')                                                    |
 | **info**           | Short call form of 'mcode.log(msg, src, 'info');             | mcode.info('message' or object, 'module name')                                                            |
 | **warn**           | Short call form of 'mcode.log(msg, src, 'warn');             | mcode.warn('message' or object, 'module name')                                                            |
 | **error**          | Short call form of 'mcode.log(msg, src, 'error');            | mcode.error('message' or object, 'module name')                                                           |
@@ -290,12 +289,12 @@ These are the functions we want at the ready in any module for development and d
 | **exp**            | Logs a standardized exception with a collapsible stack dump. | mcode.exp('message' or object, 'module name', 'exp object')                                               |
 | **expHtml**        | Generates standardized HTML for browser with a stack dump.   | mcode.expHtml('message' or object, 'module name', 'exp object')                                           |
 | **expobj**         | Logs standardized exception with an object and stack dump.   | mcode.expobj('object name', object, 'module name', 'exp object')                                          |
-| **expobjHtml**     | Generates standardized HTML with an object and  stack dump.  | mcode.expobjHtml('object name', object, 'module name', 'exp object')                                          |
+| **expobjHtml**     | Generates standardized HTML with an object and stack dump.   | mcode.expobjHtml('object name', object, 'module name', 'exp object')                                      |
 | **resx**           | Logs a standardized HTTP response and sends the response.    | mcode.resx(res, 'action', {code: 000, message: 'message', data: object, error: 'message'}, 'module name') |
 | **trace**          | Logs a standardized function call with a trace dump.         | mcode.trace('message' or object, 'module name')                                                           |
-| **traceHtml**      | Generates standardized HTML for function call with a trace.  | mcode.traceHtml('message' or object, 'module name')                                                           |
+| **traceHtml**      | Generates standardized HTML for function call with a trace.  | mcode.traceHtml('message' or object, 'module name')                                                       |
 | **logify**         | Converts a message or JSON into colorized text for log.      | mcode.logify('object or JSON string')                                                                     |
-| **logifyHtml**     | Converts a message or JSON into colorized text for Browser.  | mcode.logifyHtml('object or JSON string')                                                                  |
+| **logifyHtml**     | Converts a message or JSON into colorized text for Browser.  | mcode.logifyHtml('object or JSON string')                                                                 |
 | **simplify**       | Strips a string of BRACES, BRACKETS, QUOTES, etc.            | mcode.simplify('object or JSON string')                                                                   |
 | **logifyObject**   | Converts an Object into text appropriate for log.            | mcode.logifyObject('object')                                                                              |
 | **simplifyObject** | Converts an Object to string less BRACES, BRACKETS, etc.     | mcode.simplifyObject('object')                                                                            |
@@ -362,6 +361,9 @@ Contributor's names and contact info...
 
 ## Version History
 
+- 0.7.3
+  - Corrected crash condition in colorizeLines() when passed an empty string.
+  - Toned down the brightness of the HTML colorization of booleans for better appearance in dark mode terminals.
 - v0.7.2
   - Tweaked logging and HTML colorization for better visibility of certain data types in both VT and HTML modes.
   - Added additional test cases to cover edge scenarios in JSON colorization and HTML output formatting.

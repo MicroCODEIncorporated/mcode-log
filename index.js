@@ -334,8 +334,8 @@ const mcode = {
         integer: '<span style="font-weight: 600; color: #8bd6ffff;">',  // integer value - BLUE
         real: '<span style="font-weight: 600; color: #a0ff86;">',  // floating point value - GREEN
         bigint: '<span style="font-weight: 600; color: #cf86ff;">',  // bigint value - MAGENTA
-        true: '<span style="font-weight: 600; color: #00ff00;">',  // boolean true - LIME
-        false: '<span style="font-weight: 600; color: #ff0000;">',  // boolean false - RED
+        true: '<span style="font-weight: 600; color: #00cc00ff;">',  // boolean true - LIME
+        false: '<span style="font-weight: 600; color: #cc0000ff;">',  // boolean false - RED
         null: '<span style="font-weight: 600; color: #7c7c7c;">',  // null value - GRAY
         value: '<span style="font-weight: 600; color: #ffbf00;">',  // fallback for other values - ORANGE
         nl: '<br/>'  // newline
@@ -1987,13 +1987,13 @@ const mcode = {
 
         // Default VT behavior
         // Split the input string into lines
-        const lineArray = inputLines.split(`${vx ? vx.nl : mcode.vt.nl}`);
+        const lineArray = inputLines?.split(`${vx ? vx.nl : mcode.vt.nl}`);
 
         let currentColor = vtColor;
 
         // for each line in the array, find the last escape sequence and apply that color to
         // all the lines that follow until a new escape sequence is found at the end of a line {0013}
-        for (let i = 0; i < lineArray.length; i++)
+        for (let i = 0; i < lineArray?.length; i++)
         {
             // Apply the color to each line
             lineArray[i] = `${currentColor}${lineArray[i]}`;
@@ -2003,7 +2003,7 @@ const mcode = {
         }
 
         // Rejoin the colorized lines into a single string
-        return lineArray.join(`${vx ? vx.nl : mcode.vt.nl}`);
+        return lineArray ? lineArray.join(`${vx ? vx.nl : mcode.vt.nl}`) : '';
     },
 
     /**
