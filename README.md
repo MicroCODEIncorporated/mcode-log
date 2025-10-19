@@ -131,9 +131,11 @@ npm link mcode-log
 
 ### Examples
 
-- View of mcode.log() in a Browser...
+- Views of mcode.log() in a Browser...
 
 <p align="left"><img src=".\.github\images\mcode-log-frontend.png" width="720" title="Frontend logging..." style="border: 0.5px solid lightgray;"></p>
+
+<p align="left"><img src=".\.github\images\mcode-log-frontend2.png" width="720" title="Frontend logging..." style="border: 0.5px solid lightgray;"></p>
 
 - View of mcode.log() in a Server...
 
@@ -361,6 +363,10 @@ Contributor's names and contact info...
 
 ## Version History
 
+- 0.7.5
+  - Updated to work properly from a Browser environment _and_ a NODE.js server environment.
+    Only needed to update getFrom() function.
+  - Corrected object handling if passed to log() or exp() as 'message', now requires strict parameter order.
 - 0.7.4
   - Fixed logify() to stop inserting blank line before and between JSON objects.
   - Fixed logObj(), expObj, trace() to always use logifyObject(), even for simple arrays to correct a unique indentation issue.

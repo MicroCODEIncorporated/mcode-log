@@ -95,6 +95,7 @@
  *      16-Oct-2025   TJM-MCODE  {0023}   0.7.04 - fixed logify() to stop inserting blank line before and between JSON objects.
  *                                                 Also fixed logObj() to always use logifyObject(), even for simple arrays to
  *                                                 correct a unique indentation issue.
+ *      19-Oct-2025   TJM-MCODE  {0024}   0.7.05 - fixed 'getFrom()' to work properly in non-NodeJS environments by checking for 'process.versions.node'.
  *
  *
  *
@@ -115,7 +116,8 @@
 
 const _data = require('mcode-data');
 
-const path = require("path");
+const isNode = typeof process !== 'undefined' && process.versions?.node;
+const path = isNode ? require('path') : null;
 const packageJson = require('./package.json');
 
 // #endregion
@@ -368,24 +370,37 @@ const mcode = {
      * @memberof mcode
      * @api private
      * @desc Helper function for log() to determine module and line of caller.
-     * @param source the module name from the mcode.log() call as a default (optional).
+     * @param {string} source the module name from the mcode.log() call as a default (optional).
      * @returns (2) strings: 'appModule' and 'module:line' of mcode.log() caller.
      */
     getFrom: function (source)
     {
-        // Get <app-base-dir> (3 levels up from <baseDir>/node_modules/mcode-log)
-        const baseDir = path.resolve(__dirname, "../../..");
-        let moduleLine = `${source}:???`;
-        let appModule = source.split(/[\.,:;!?\s]+/)[0].toUpperCase();
+        let appModule = 'APP';
+        let moduleLine = 'UNKNOWN';
 
-        if (typeof Error.prepareStackTrace !== "function")
+        if (typeof source !== 'string' || source.trim() === '') return [appModule, moduleLine];
+
+        // Get <app-base-dir> (3 levels up from <baseDir>/node_modules/mcode-log)
+        const baseDir = isNode ? path.resolve(__dirname, '../../..') : '';
+        appModule = source.split(/[\.,:;!?\s]+/)[0].toUpperCase();
+
+        // ƒ Convert absolute file path to relative to baseDir for NODE environment
+        const toRelative = (filePath) =>
+        {
+            if (!filePath) return source;
+            if (!isNode || filePath.startsWith('node:')) return filePath;
+
+            return path.relative(baseDir, filePath);
+        };
+
+        if (typeof Error.prepareStackTrace !== 'function')
         {
             // Fallback for non-V8 engines -- crawl a string stack trace
-            const stack = new Error().stack.split("\n");
+            const stack = new Error().stack.split('\n');
 
             for (let i = 2; i < stack.length; i++)
             {
-                if (!stack[i].includes("index.js"))
+                if (!stack[i].includes('index.js'))
                 {
                     const match = stack[i].match(/\(([^)]+):(\d+):\d+\)/);
                     if (match)
@@ -395,9 +410,9 @@ const mcode = {
                         const lineNumber = match[2];
                         let relativePath = (filePath.includes('node:'))
                             ? filePath
-                            : path.relative(baseDir, filePath);
+                            : toRelative(filePath);
                         moduleLine = `${relativePath}:${lineNumber}`;
-                        appModule = this.extractEntity(relativePath);;
+                        appModule = this.extractEntity(relativePath);
                     }
                 }
             }
@@ -415,7 +430,7 @@ const mcode = {
 
                 if (stack && stack.length > 2)
                 {
-                    const caller = stack.find((s) => !s.getFileName().includes("index.js"));
+                    const caller = stack.find((s) => !s.getFileName().includes('index.js'));
 
                     if (caller)
                     {
@@ -424,7 +439,7 @@ const mcode = {
                         const lineNumber = caller.getLineNumber();
                         let relativePath = (filePath.includes('node:'))
                             ? filePath
-                            : path.relative(baseDir, filePath);
+                            : toRelative(filePath);
                         moduleLine = `${relativePath}:${lineNumber}`;
                         appModule = this.extractEntity(relativePath);
                     }
@@ -463,12 +478,6 @@ const mcode = {
     },
     log: function (message = '<no message>', source = '<unknown>.js', severity = 'debug', error = null, event_id = null, vx = mcode.vt)
     {
-        // if 'source' is not a string containing '.js' or '.ts', log it as an object...
-        if (!_data.isString(source) || (!source.includes('.js') && !source.includes('.ts')))
-        {
-            return mcode.logobj(message, source, null, vx);
-        }
-
         let logText = [];  // build the response as an array for speed
         let status = `${severity}: ${message}`;
         let logifiedMessage = '';
@@ -737,11 +746,6 @@ const mcode = {
     },
     exp: function (message = '<no message>', source = '<unknown>.js', exception = {}, exptrace = {}, event_id = null, vx = mcode.vt)
     {
-        // if 'source' is not a string containing '.js' or '.ts' (or an API Route), log it as an object...
-        if (!_data.isString(source) || (!source.includes('.js') && !source.includes('.ts') && !source.includes(`/`)))
-        {
-            return mcode.expobj(message, source, exception, exptrace, event_id, vx);
-        }
         let logText = [];  // build the response as an array for speed
         let logifiedMessage = '';
         let logifiedException = '';
@@ -1852,12 +1856,12 @@ const mcode = {
 
         if (outputType === 'jsx')
         {
-            listifiedText += "<ul className='list-group'>";
+            listifiedText += '<ul className="list-group">';
 
             Object.entries(objectToListify).forEach(([key, value]) =>
             {
                 // ƒ to convert array element to text, simplify for display, and add to LIST...
-                listifiedText += `<li className='list-group-item' key='${keyIndex++}'>${key}: ${value}</li>`;
+                listifiedText += `<li className="list-group-item" key="${keyIndex++}">${key}: ${value}</li>`;
             });
 
             listifiedText += '</ul>';
@@ -1867,7 +1871,7 @@ const mcode = {
             Object.entries(objectToListify).forEach(([key, value]) =>
             {
                 // ƒ to convert array element to text, simplify for display, and add to LIST...
-                listifiedText += `<li className='list-group-item' key='${keyIndex++}'>${key}: ${value}</li>`;
+                listifiedText += `<li className="list-group-item" key="${keyIndex++}">${key}: ${value}</li>`;
             });
         }
 
@@ -1890,12 +1894,12 @@ const mcode = {
 
         if (outputType === 'jsx')
         {
-            listText.push(`<ul className='list-group'>`);
+            listText.push(`<ul className="list-group">`);
 
             arrayToListify.forEach(element =>
             {
                 // ƒ to convert array element to text, simplify for display, and add to LIST...
-                listText.push(`<li className='list-group-item' key='${keyIndex++}'>${mcode.simplifyObject(element)}</li>`);
+                listText.push(`<li className="list-group-item" key="${keyIndex++}">${mcode.simplifyObject(element)}</li>`);
             });
 
             listText.push('</ul>');
@@ -1905,7 +1909,7 @@ const mcode = {
             arrayToListify.forEach(element =>
             {
                 // ƒ to convert array element to text, simplify for display, and add to LIST...
-                listText.push(`<li class='list-group-item' key='${keyIndex++}'>${mcode.simplifyObject(element)}</li>`);
+                listText.push(`<li className="list-group-item" key="${keyIndex++}">${mcode.simplifyObject(element)}</li>`);
             });
         }
 
