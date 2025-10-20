@@ -482,6 +482,12 @@ const mcode = {
         let status = `${severity}: ${message}`;
         let logifiedMessage = '';
 
+        // support mcode.log(object) directly -- {0023}
+        if (typeof message === 'object')
+        {
+            return mcode.logobj('', message, source, event_id, vx);
+        }
+
         // do not log 'debug' messages in production mode - {0008}
         if ((severity === 'debug') && (mode === 'production'))
         {
@@ -651,23 +657,24 @@ const mcode = {
     {
         let logText = [];  // build the response as an array for speed
         let logifiedMessage = '';
+        const logObjName = (typeof objName === 'string' && objName.trim() !== '') ? `${objName}:${vx.reset}${vx.nl}` : '';
 
         // 'Logifiy' all objects passed to this function...
         if (_data.isArray(obj))
         {
-            logifiedMessage = `${vx.punc}{array}${vx.reset}${vx.nl}${vx.nl}${vx.punc}${objName}:${vx.reset}${vx.nl}` + mcode.logify(mcode.logifyObject(obj, vx), vx);
+            logifiedMessage = `${vx.punc}{array}${vx.reset}${vx.nl}${vx.nl}${logObjName}` + mcode.logify(mcode.logifyObject(obj, vx), vx);
         }
         else if (_data.isObject(obj))
         {
-            logifiedMessage = `${vx.punc}{${(typeof obj)}}${vx.reset}${vx.nl}${vx.nl}${vx.punc}${objName}:${vx.reset}${vx.nl}` + mcode.logify(mcode.logifyObject(obj, vx), vx);
+            logifiedMessage = `${vx.punc}{${(typeof obj)}}${vx.reset}${vx.nl}${vx.nl}${logObjName}` + mcode.logify(mcode.logifyObject(obj, vx), vx);
         }
         else if (_data.isJson(obj))
         {
-            logifiedMessage = `${vx.punc}{json}${vx.reset}${vx.nl}${vx.nl}${vx.punc}${objName}:${vx.reset}${vx.nl}` + mcode.logify(mcode.logifyObject(obj, vx), vx);
+            logifiedMessage = `${vx.punc}{json}${vx.reset}${vx.nl}${vx.nl}${logObjName}` + mcode.logify(mcode.logifyObject(obj, vx), vx);
         }
         else
         {
-            logifiedMessage = `${vx.punc}{${(typeof obj)}}${vx.reset}${vx.nl}${vx.nl}${vx.punc}${objName}: ${vx.reset}` + obj;
+            logifiedMessage = `${vx.punc}{${(typeof obj)}}${vx.reset}${vx.nl}${vx.nl}${logObjName}` + obj;
         }
 
         const [appModule, moduleLine] = this.getFrom(source);
@@ -750,6 +757,12 @@ const mcode = {
         let logifiedMessage = '';
         let logifiedException = '';
         let isExpObject = false;
+
+        // support mcode.log(object) directly -- {0023}
+        if (typeof message === 'object')
+        {
+            return mcode.expobj('', message, source, event_id, vx);
+        }
 
         // flatten the message object to strings for logging...
         if (_data.isObject(message))
@@ -894,24 +907,26 @@ const mcode = {
         let logText = [];  // build the response as an array for speed
         let logifiedMessage = '';
         let logifiedException = '';
+        const logObjName = (typeof objName === 'string' && objName.trim() !== '') ? `${objName}:${vx.nl}` : '';
+
         let isExpObject = false;
 
         // flatten the message object to strings for logging...
         if (_data.isArray(obj))
         {
-            logifiedMessage = `{array}${vx.nl}${vx.nl}${vx.punc}${objName}:${vx.nl}` + mcode.logify(mcode.logifyObject(obj), vx);
+            logifiedMessage = `{array}${vx.nl}${vx.nl}${vx.punc}${logObjName}` + mcode.logify(mcode.logifyObject(obj), vx);
         }
         else if (_data.isObject(obj))
         {
-            logifiedMessage = `{${(typeof obj)}}${vx.nl}${vx.nl}${vx.punc}${objName}:${vx.nl}` + mcode.logify(mcode.logifyObject(obj), vx);
+            logifiedMessage = `{${(typeof obj)}}${vx.nl}${vx.nl}${vx.punc}${logObjName}` + mcode.logify(mcode.logifyObject(obj), vx);
         }
         else if (_data.isJson(obj))
         {
-            logifiedMessage = `{json}${vx.nl}${vx.nl}${vx.punc}${objName}:${vx.nl}` + mcode.logify(mcode.logifyObject(obj), vx);
+            logifiedMessage = `{json}${vx.nl}${vx.nl}${vx.punc}${logObjName}` + mcode.logify(mcode.logifyObject(obj), vx);
         }
         else
         {
-            logifiedMessage = `{${(typeof obj)}}${vx.nl}${vx.nl}${vx.punc}${objName}: ` + obj;
+            logifiedMessage = `{${(typeof obj)}}${vx.nl}${vx.nl}${vx.punc}${logObjName}` + obj;
         }
 
         // flatten the exception object to strings for logging...
@@ -1762,6 +1777,78 @@ const mcode = {
             return '<unknown>';
         };
 
+        // ƒ to detect Fetch API Headers, Request, and Response objects
+        const isFetchHeaders = (value) =>
+            typeof Headers === 'function' && value instanceof Headers;
+
+        // ƒ to convert Headers to simple object
+        const headersToObject = (headers) =>
+        {
+            if (!headers) return {};
+
+            const result = {};
+
+            if (typeof headers.forEach === 'function')
+            {
+                headers.forEach((headerValue, headerName) =>
+                {
+                    result[headerName] = headerValue;
+                });
+            }
+            else if (typeof headers.entries === 'function')
+            {
+                for (const [headerName, headerValue] of headers.entries())
+                {
+                    result[headerName] = headerValue;
+                }
+            }
+
+            return result;
+        };
+
+        // ƒ to detect Fetch API Response objects
+        const isFetchResponse = (value) =>
+            typeof Response === 'function' && value instanceof Response;
+
+        // ƒ to detect Fetch API Request objects
+        const isFetchRequest = (value) =>
+            typeof Request === 'function' && value instanceof Request;
+
+        // ƒ to convert Response to simple object
+        const summarizeResponse = (response) =>
+        {
+            return {
+                ok: response.ok,
+                status: response.status,
+                statusText: response.statusText,
+                redirected: response.redirected,
+                type: response.type,
+                url: response.url,
+                bodyUsed: response.bodyUsed,
+                headers: headersToObject(response.headers),
+                body: response.bodyUsed ? '<body consumed>' : '<body available via response.clone()>'
+            };
+        };
+
+        // ƒ to convert Request to simple object
+        const summarizeRequest = (request) =>
+        {
+            return {
+                method: request.method,
+                url: request.url,
+                cache: request.cache,
+                credentials: request.credentials,
+                integrity: request.integrity,
+                keepalive: request.keepalive,
+                mode: request.mode,
+                redirect: request.redirect,
+                referrer: request.referrer,
+                referrerPolicy: request.referrerPolicy,
+                bodyUsed: request.bodyUsed,
+                headers: headersToObject(request.headers)
+            };
+        };
+
         // ƒ to recursively stringify an object
         const recursiveStringify = (currentObject) =>
         {
@@ -1777,7 +1864,7 @@ const mcode = {
             }
 
             // special case for File objects which cannot be completely stringified
-            if (currentObject instanceof File)
+            if (typeof File !== 'undefined' && currentObject instanceof File)
             {
                 let file = currentObject;
                 const date = new Date(file.lastModified);
@@ -1788,6 +1875,27 @@ const mcode = {
                     size: file.size,
                     date: date.toString()
                 };
+            }
+
+            if (isFetchHeaders(currentObject))
+            {
+                actualParentObjects.pop();
+
+                return recursiveStringify(headersToObject(currentObject));
+            }
+
+            if (isFetchResponse(currentObject))
+            {
+                actualParentObjects.pop();
+
+                return recursiveStringify(summarizeResponse(currentObject));
+            }
+
+            if (isFetchRequest(currentObject))
+            {
+                actualParentObjects.pop();
+
+                return recursiveStringify(summarizeRequest(currentObject));
             }
 
             // Detect and handle circular references

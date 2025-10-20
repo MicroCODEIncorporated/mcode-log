@@ -363,15 +363,18 @@ Contributor's names and contact info...
 
 ## Version History
 
-- 0.7.5
+- v0.7.6
+  - Added support for logging Request/Response objects from the Fetch API.
+  - Added support for converting Fetch API Headers, Request, and Response objects to simple objects.
+- v0.7.5
   - Updated to work properly from a Browser environment _and_ a NODE.js server environment.
     Only needed to update getFrom() function.
   - Corrected object handling if passed to log() or exp() as 'message', now requires strict parameter order.
-- 0.7.4
+- v0.7.4
   - Fixed logify() to stop inserting blank line before and between JSON objects.
   - Fixed logObj(), expObj, trace() to always use logifyObject(), even for simple arrays to correct a unique indentation issue.
   - Added test cases to cover empty string and multiple JSON objects in logify() and log.
-- 0.7.3
+- v0.7.3
   - Corrected crash condition in colorizeLines() when passed an empty string.
 - v0.7.2
   - Tweaked logging and HTML colorization for better visibility of certain data types in both VT and HTML modes.
