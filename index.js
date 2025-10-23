@@ -254,7 +254,7 @@ const mcode = {
         dead: (theme === 'dark') ? '\x1b[95m' : '\x1b[35m',  // magenta
         code: (theme === 'dark') ? '\x1b[96m' : '\x1b[36m',  // cyan
         info: (theme === 'dark') ? '\x1b[97m' : '\x1b[37m',  // white
-        dbug: (theme === 'dark') ? '\x1b[97m' : '\x1b[37m',  // white
+        dbug: (theme === 'dark') ? '\x1b[38;2;255;140;0m' : '\x1b[38;5;208m',  // orange
 
         // custom JSON colors -- see 'logify()' for use
         punc: '\x1b[96m\x1b[1m',  // string value - CYAN, BOLD
@@ -325,12 +325,12 @@ const mcode = {
         gray: (theme === 'dark') ? '<span style="color: #999999;">' : '<span style="color: #333333;">',  // gray
         errr: (theme === 'dark') ? '<span style="color: #ff6b6b;">' : '<span style="color: #d32f2f;">',  // red
         good: (theme === 'dark') ? '<span style="color: #51cf66;">' : '<span style="color: #388e3c;">',  // green
-        warn: (theme === 'dark') ? '<span style="color: #ffd43b;">' : '<span style="color: #f57c00;">',  // yellow
+        warn: (theme === 'dark') ? '<span style="color: #efff3b;">' : '<span style="color: #cbc800;">',  // yellow
         cold: (theme === 'dark') ? '<span style="color: #339af0;">' : '<span style="color: #1976d2;">',  // blue
         dead: (theme === 'dark') ? '<span style="color: #e599f7;">' : '<span style="color: #7b1fa2;">',  // magenta
         code: (theme === 'dark') ? '<span style="color: #3bc9db;">' : '<span style="color: #0097a7;">',  // cyan
         info: (theme === 'dark') ? '<span style="color: #f8f9fa;">' : '<span style="color: #212529;">',  // white/black
-        dbug: (theme === 'dark') ? '<span style="color: #f8f9fa;">' : '<span style="color: #212529;">',  // white/black
+        dbug: (theme === 'dark') ? '<span style="color: #f2c200;">' : '<span style="color: #f57c00;">',  // orange
 
         // custom JSON colors -- see 'logifyHtml()' for use
         punc: '<span style="font-weight: 500; color: #00ffff;">',  // punctuation - CYAN, BOLD
@@ -344,6 +344,41 @@ const mcode = {
         null: '<span style="font-weight: 600; color: #7c7c7c;">',  // null value - GRAY
         value: '<span style="font-weight: 600; color: #ffbf00;">',  // fallback for other values - ORANGE
         nl: '<br/>'  // newline
+    },
+
+    /**
+     * @func resolveSeverity
+     * @memberof mcode
+     * @desc Resolves a severity level to its corresponding text, icon, color, and prefix.
+     * This is used throughout to ensure consistency in the logged output.
+     * @api public
+     * @param {string} severity The severity level to resolve.
+     * @param {object} vx [Optional] the color video effects to use, defaults to 'mcode.vt'.
+     * @returns {object} An object containing the resolved text, icon, color, and prefix.
+     */
+    resolveSeverity: function (severity, vx = mcode.vt)
+    {
+        const normalized = (severity ?? '').toString().toLowerCase();
+        const severityMap = [
+            {keys: ['i', 'inf', 'info'], text: 'info', icon: '📣', colorKey: 'info', prefix: 'i'},
+            {keys: ['w', 'wrn', 'warn', 'warning'], text: 'warn', icon: '⚠️', colorKey: 'warn', prefix: '!'},
+            {keys: ['e', 'err', 'error'], text: 'error', icon: '⛔', colorKey: 'errr', prefix: 'x'},
+            {keys: ['x', 'exp', 'crash', 'fatal', 'exception'], text: 'exception', icon: '💀', colorKey: 'dead', prefix: '*'},
+            {keys: ['s', 'ack', 'done', 'success'], text: 'success', icon: '✅', colorKey: 'good', prefix: '✓'},
+            {keys: ['d', 'dbg', 'dbug', 'debug'], text: 'debug', icon: '🎃', colorKey: 'dbug', prefix: 'µ'}
+        ];
+
+        const entry = severityMap.find((item) => item.keys.includes(normalized))
+            || {text: 'undefined', icon: '❓', colorKey: 'punc', prefix: '?'};
+
+        const colorValue = `${vx.reset}${vx[entry.colorKey] ?? vx.punc}`;
+
+        return {
+            text: entry.text,
+            icon: entry.icon,
+            color: colorValue,
+            prefix: entry.prefix
+        };
     },
 
     /**
@@ -472,7 +507,7 @@ const mcode = {
      *      mcode.log('This is a test message.', 'myModule', 'info');
      *      mcode.log('object', object, 'myModule);
      */
-    logHtml: function (message = '<no message>', source = '<unknown>.js', severity = 'info', error = null, event_id = null)
+    logHtml: function (message = '<no message>', source = '<unknown>.js', severity = 'debug', error = null, event_id = null)
     {
         return mcode.log(message, source, severity, error, event_id, mcode.ht);
     },
@@ -483,9 +518,9 @@ const mcode = {
         let logifiedMessage = '';
 
         // support mcode.log(object) directly -- {0023}
-        if (typeof message === 'object')
+        if (_data.isObject(message))
         {
-            return mcode.logobj('', message, source, event_id, vx);
+            return mcode.logobj('', message, source, severity, event_id, vx);
         }
 
         // do not log 'debug' messages in production mode - {0008}
@@ -517,67 +552,10 @@ const mcode = {
         }
         const [appModule, moduleLine] = this.getFrom(source);
 
-        let sevColor = vx.reset;
-        let sevText = severity;
+        const {text: sevText, icon: sevIcon, color: sevColor, prefix: sevPrefix} = mcode.resolveSeverity(severity, vx);
 
         logText.push(`${vx.reset}${vx.dim}++${vx.nl}${vx.reset}${vx.dim}`);
-
-        switch (severity)
-        {
-            case 'i':
-            case 'inf':
-            case 'info':
-                sevText = 'info';
-                sevColor += vx.info;
-                logText.push(` i ｢mcode｣: ${sevColor}📣 [${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor, vx)}'`);
-                break;
-            case 'w':
-            case 'wrn':
-            case 'warn':
-            case 'warning':
-                sevText = 'warn';
-                sevColor += vx.warn;
-                logText.push(` ! ｢mcode｣: ${sevColor}⚠️ [${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor, vx)}'`);
-                break;
-            case 'e':
-            case 'err':
-            case 'error':
-                sevText = 'error';
-                sevColor += vx.errr;
-                logText.push(` x ｢mcode｣: ${sevColor}⛔ [${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor, vx)}'`);
-                break;
-            case 'x':
-            case 'exp':
-            case 'crash':
-            case 'fatal':
-            case 'exception':
-                sevText = 'exception';
-                sevColor += vx.dead;
-                logText.push(` * ｢mcode｣: ${sevColor}💀 [${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor, vx)}'`);
-                break;
-            case 's':
-            case 'ack':
-            case 'done':
-            case 'success':
-                sevText = 'success';
-                sevColor += vx.good;
-                logText.push(` ✓ ｢mcode｣: ${sevColor}✅ [${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor, vx)}'`);
-                break;
-            case 'd':
-            case 'dbg':
-            case 'dbug':
-            case 'debug':
-                sevText = 'debug';
-                sevColor += vx.dbug;
-                logText.push(` µ ｢mcode｣: ${sevColor}🔍 [${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor, vx)}'`);
-                break;
-            case '?':
-            default:
-                sevText = 'undefined';
-                sevColor += vx.punc;
-                logText.push(` ? ｢mcode｣: ${sevColor}❓ [${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor, vx)}'`);
-                break;
-        }
+        logText.push(`${vx.reset}${vx.dim} ${sevPrefix} ｢mcode｣: ${sevColor}${sevIcon} [${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor, vx)}'`);
         logText.push(`${vx.nl}`);
 
         let logifiedError = false;
@@ -649,11 +627,11 @@ const mcode = {
      *            mcode.logobj('myObject', myObject, 'myModule');
      *            mcode.obj('myObject', myObject, 'myModule');
      */
-    logobjHtml: function (objName, obj, source = '<undefined>.js', event_id = null)
+    logobjHtml: function (objName, obj, source = '<undefined>.js', severity = 'info', event_id = null)
     {
-        return mcode.logobj(objName, obj, source, event_id, mcode.ht);
+        return mcode.logobj(objName, obj, source, severity, event_id, mcode.ht);
     },
-    logobj: function (objName, obj, source = '<undefined>.js', event_id = null, vx = mcode.vt)
+    logobj: function (objName, obj, source = '<undefined>.js', severity = 'info', event_id = null, vx = mcode.vt)
     {
         let logText = [];  // build the response as an array for speed
         let logifiedMessage = '';
@@ -678,13 +656,10 @@ const mcode = {
         }
 
         const [appModule, moduleLine] = this.getFrom(source);
-
-        let sevColor = vx.reset;
-        let sevText = 'info';
-        sevColor += vx.info;
+        const {text: sevText, icon: sevIcon, color: sevColor, prefix: sevPrefix} = mcode.resolveSeverity(severity, vx);
 
         logText.push(`${vx.reset}${vx.dim}++${vx.nl}`);
-        logText.push(`${vx.reset}${vx.dim} i ｢mcode｣: ${sevColor}📣 [${appModule}] '${logifiedMessage}'${vx.nl}`);
+        logText.push(`${vx.reset}${vx.dim} ${sevPrefix} ｢mcode｣: ${sevColor}${sevIcon} [${appModule}] '${logifiedMessage}'${vx.nl}`);
 
         if (event_id)
         {
@@ -717,13 +692,14 @@ const mcode = {
     // convenient abbreviations of all the logged severities...
     info: function (message, source, event_id) {mcode.log(message, source, 'info', null, event_id);},
     warn: function (message, source, event_id) {mcode.log(message, source, 'warn', null, event_id);},
-    error: function (message, source, event_id) {mcode.log(message, source, 'error', null, event_id);},
-    error: function (message, source, error, event_id) {mcode.log(message, source, 'error', error, event_id);},
     crash: function (message, source, event_id) {mcode.log(message, source, 'exception', null, event_id);},
     fatal: function (message, source, event_id) {mcode.log(message, source, 'exception', null, event_id);},
     done: function (message, source, event_id) {mcode.log(message, source, 'success', null, event_id);},
     debug: function (message, source, event_id) {mcode.log(message, source, 'debug', null, event_id);},
     success: function (message, source, event_id) {mcode.log(message, source, 'success', null, event_id);},
+
+    // error() takes an optional 'error' parameter for logging underlying error information
+    error: function (message, source, error, event_id) {mcode.log(message, source, 'error', error, event_id);},
 
     /**
      * @func ready
@@ -759,17 +735,19 @@ const mcode = {
         let isExpObject = false;
 
         // support mcode.log(object) directly -- {0023}
-        if (typeof message === 'object')
-        {
-            return mcode.expobj('', message, source, event_id, vx);
-        }
-
-        // flatten the message object to strings for logging...
         if (_data.isObject(message))
         {
-            logifiedMessage = `${vx.nl}` + mcode.logify(mcode.logifyObject(message));
+            return mcode.expobj('', message, source, exception, event_id, vx);
         }
-        else if (_data.isJson(message))
+
+        // if an exception object has been passed without source, shift parameters...
+        if (!_data.isString(source))
+        {
+            exception = source;
+            source = '<unknown>.js';
+        }
+
+        if (_data.isJson(message))
         {
             logifiedMessage = `${vx.nl}` + mcode.logify(mcode.logifyObject(message));
         }
@@ -2065,9 +2043,9 @@ const mcode = {
     },
 
     /**
-     * @func timestamp
+     * @func timeStamp
      * @memberof mcode
-     * @desc Generates timestamp string: YYYY-MM-DD Day HH:MM:SS.mmm.
+     * @desc Generates a timestamp string: YYYY-MM-DD Day HH:MM:SS.mmm.
      * @api public
      * @param {boolean} local [Optional] determines whether or not local time is used, if not it returns use UTC.
      * @returns {string} 'YYYY-MM-DD Day HH:MM:SS.mmm UTC|Local'.
@@ -2119,7 +2097,7 @@ const mcode = {
 // #region  M E T H O D - E X P O R T S
 
 // Immediately Invoked Function Expression (IIFE) invoked on 'this' which
-// represents the global object(window in a browser, global in Node.js).
+// represents the global object (window in a browser, global in Node.js).
 // This IIFE returns the 'mcode' object to be assigned to the global object.
 // The Universal Module Definition (UMD) pattern supports Asynchronous Module Definition (AMD),
 // CommonJS / Node.js, and Browser 'global' usage. {0010}

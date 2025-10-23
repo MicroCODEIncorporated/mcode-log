@@ -247,7 +247,7 @@ describe('mcode.exception1', () =>
         const consoleSpy = jest.spyOn(console, 'log');
 
         // Call the function that should log the message
-        mcode.log(`This is an EXCEPTION log event`, MODULE_NAME, 'exception');
+        mcode.log(`This is an EXCEPTION #1 log event`, MODULE_NAME, 'exception');
 
         // Check that console.log was called with the expected message
         expect(consoleSpy.mock.calls).toEqual(
@@ -272,7 +272,7 @@ describe('mcode.exception2', () =>
         const consoleSpy = jest.spyOn(console, 'log');
 
         // Call the function that should log the message
-        mcode.exp(`This is an EXCEPTION logged object`, MODULE_NAME, exceptionObject);
+        mcode.exp(`This is an EXCEPTION #2 logged object`, MODULE_NAME, exceptionObject);
 
         // Check that console.log was called with the expected message
         expect(consoleSpy.mock.calls).toEqual(
@@ -301,11 +301,11 @@ describe('mcode.exception3', () =>
         // Call the function that should log the message
         try
         {
-            throw new Error('This is an an actual EXCEPTION');
+            throw new Error('This is an an actual EXCEPTION #3');
         }
         catch (exp)
         {
-            mcode.exp(`This is an EXCEPTION 'exp' object`, MODULE_NAME, exp);
+            mcode.exp(`This is an EXCEPTION #3 'exp' object`, MODULE_NAME, exp);
         }
 
         // Check that console.log was called with the expected message
@@ -316,7 +316,42 @@ describe('mcode.exception3', () =>
                 expect.arrayContaining([expect.stringContaining("index.test.js")]),
                 expect.arrayContaining([expect.stringContaining("Error:")]),
                 expect.arrayContaining([expect.stringContaining(" at ")]),
-                expect.arrayContaining([expect.stringContaining("This is an EXCEPTION 'exp' object")])
+                expect.arrayContaining([expect.stringContaining("This is an EXCEPTION #3 'exp' object")])
+            ])
+        );
+
+        // Restore the original console.log function
+        consoleSpy.mockRestore();
+    });
+});
+
+// EXCEPTION (+ optional exception object without 'source') Test
+describe('mcode.exception4', () =>
+{
+    it('mcode.exp() should output an *exception 4* message and object to the console.', () =>
+    {
+        // Create a spy on console.log
+        const consoleSpy = jest.spyOn(console, 'log');
+
+        // Call the function that should log the message
+        try
+        {
+            throw new Error('This is an an actual EXCEPTION #4');
+        }
+        catch (exp)
+        {
+            mcode.exp(`This is an EXCEPTION #4 'exp' object`, exp);  // NO 'SOURCE' parameter
+        }
+
+        // Check that console.log was called with the expected message
+        expect(consoleSpy.mock.calls).toEqual(
+            expect.arrayContaining([
+                expect.arrayContaining([expect.stringContaining("exception w/stack")]),
+                expect.arrayContaining([expect.stringContaining("[INDEX]")]),
+                expect.arrayContaining([expect.stringContaining("index.test.js")]),
+                expect.arrayContaining([expect.stringContaining("Error:")]),
+                expect.arrayContaining([expect.stringContaining(" at ")]),
+                expect.arrayContaining([expect.stringContaining("This is an EXCEPTION #4 'exp' object")])
             ])
         );
 
@@ -664,7 +699,7 @@ describe('mcode.expobj', () =>
         // Call the function that should log the message
         try
         {
-            throw new Error('This is an an actual EXCEPTION');
+            throw new Error('This is an an actual EXCEPTION w/OBJECT');
         }
         catch (exp)
         {

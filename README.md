@@ -363,6 +363,12 @@ Contributor's names and contact info...
 
 ## Version History
 
+- v0.7.7
+  - Allow excluding 'source' and shift exception to 3rd parameter in exp() and expHtml() functions, e.g.: mcode.exp('message', exceptionObject)
+  - Now that the logging functions all support getting source and line # automatically via stack traces, this makes the 'source' parameter optional.
+  - Severity is now handled in one function 'mcode.resolveSeverity()' to simplify future changes and support it in all logging.
+  - Added support for ORANGE colorization for 'debug' severity logging in both VT and HTML modes with a new matching 🎃.
+  - Uninstalled JEST (and all its dependencies) from production package, it is only needed for development.
 - v0.7.6
   - Added support for logging Request/Response objects from the Fetch API.
   - Added support for converting Fetch API Headers, Request, and Response objects to simple objects.
