@@ -363,6 +363,10 @@ Contributor's names and contact info...
 
 ## Version History
 
+- v0.7.8
+  - Restored the ability to pass 'source' as the 2nd parameter to log() and exp() functions.
+    This allows the user to override the automatic source detection via stack traces if desired.
+  - Updated JEST tests to cover both usages of log() and exp() functions with and without 'source' parameter.
 - v0.7.7
   - Allow excluding 'source' and shift exception to 3rd parameter in exp() and expHtml() functions, e.g.: mcode.exp('message', exceptionObject)
   - Now that the logging functions all support getting source and line # automatically via stack traces, this makes the 'source' parameter optional.

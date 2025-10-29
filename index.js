@@ -523,6 +523,12 @@ const mcode = {
             return mcode.logobj('', message, source, severity, event_id, vx);
         }
 
+        // support mcode.log('This object is bad', object) directly -- {0023}
+        if (_data.isObject(source))
+        {
+            return mcode.logobj(message, source, undefined, severity, event_id, vx);
+        }
+
         // do not log 'debug' messages in production mode - {0008}
         if ((severity === 'debug') && (mode === 'production'))
         {
@@ -531,10 +537,6 @@ const mcode = {
 
         // flatten the message object to strings for logging...
         if (_data.isArray(message))
-        {
-            logifiedMessage = `${vx.nl}` + mcode.logify(mcode.logifyObject(message, vx), vx);
-        }
-        else if (_data.isObject(message))
         {
             logifiedMessage = `${vx.nl}` + mcode.logify(mcode.logifyObject(message, vx), vx);
         }
