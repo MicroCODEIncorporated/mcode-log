@@ -1367,7 +1367,7 @@ describe('mcode.html', () =>
 
                 // Get VT output
                 let consoleSpy = jest.spyOn(console, 'log');
-                mcode.logobj('Consistency Test VT', testObj, MODULE_NAME);
+                mcode.debug('Consistency Test VT', testObj, MODULE_NAME);
                 const vtOutput = consoleSpy.mock.calls.join('');
                 consoleSpy.mockRestore();
 

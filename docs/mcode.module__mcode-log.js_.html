@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Module: 'mcode-log.js'</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Module: 'mcode-log.js'</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">>
+     MicroCODE Shared App Logging Library
+
+     LICENSE:
+     --------
+     MIT License: MicroCODE.mcode-log
+
+     Copyright (c) 2022-2024 Timothy McGuire, MicroCODE, Inc.
+
+     Permission is hereby granted, free of charge, to any person obtaining a copy
+     of this software and associated documentation files (the "Software"), to deal
+     in the Software without restriction, including without limitation the rights
+     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     copies of the Software, and to permit persons to whom the Software is
+     furnished to do so, subject to the following conditions:
+
+     The above copyright notice and this permission notice shall be included in all
+     copies or substantial portions of the Software.
+
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     SOFTWARE.
+
+
+     DESCRIPTION:
+     ------------
+     This module implements the MicroCODE's Common JavaScript functions for logging and debugging.
+
+
+     REFERENCES:
+     -----------
+     1. MIT xPRO Course: Professional Certificate in Coding: Full Stack Development with MERN
+
+     2. List of ANSI Color Escape Sequences
+        https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
+
+     3. Showing Line Numbers in console.log from Node.js
+        https://stackoverflow.com/questions/45395369/how-to-get-console-log-line-numbers-shown-in-nodejs
+
+
+
+
+     MODIFICATIONS:
+     --------------
+     Date:         By-Group:   Rev:    Description:
+
+     27-Jan-2022   TJM-MCODE  {0001}   New module for common reusable Javascript logging functions.
+     05-Mar-2022   TJM-MCODE  {0002}   Documentation updates.
+     04-May-0222   TJM-MCODE  {0003}   Corrected 'month' in timeStamp.
+     03-Oct-2022   TJM-MCODE  {0004}   Added 'log()' to simplify console logging of app events.
+     03-Oct-2022   TJM-MCODE  {0005}   Added use of 'vt' for colorizing Console Log entries.
+     16-Oct-2022   TJM-MCODE  {0006}   Added 'success' as a severity.
+     30-Oct-2023   TJM-MCODE  {0007}   Updated to TypeScript, reversed to pure JavaScript in Jan 2024.
+     03-Dec-2023   TJM-MCODE  {0008}   Don't log 'debug' messages in staging or production mode.
+     21-Jan-2024   TJM-MCODE  {0009}   Converted to a single ES6 Module (ESM) for use in both
+                                       Frontend/Client and Backend/Server as a NodeJS package.
+     01-Feb-2024   TJM-MCODE  {0010}   Changed to the Universal Module Definition (UMD) pattern to support AMD,
+                                       CommonJS/Node.js, and browser global in our exported module.
+     02-Mar-2024   TJM-MCODE  {0011}   Added 'logobj()', 'expobj()', 'isFunction()', 'hexify()', 'octify()', and 'colorizeLines()'
+                                       all in the pursuit of a more complete and consistent logging and debugging experience,
+                                       in both the Console, NPM, and the Browser's DevTools.
+     06-Jul-2024   TJM-MCODE  {0012}   0.4.00 - moved all 'data' functions into sub-package 'mcode-data'.
+     22-Aug-2024   TJM-MCODE  {0013}   0.4.04 - corrected 'colorizeLines()' to carry on embedded colors to following lines.
+     22-Aug-2024   TJM-MCODE  {0014}   0.4.05 - corrected 'logify()' to accept all legal JSON Key names.
+     19-Feb-2025   TJM-MCODE  {0015}   0.5.08 - updated 'resx()' to support returning non-db entity results,
+                                                to carry this common response code into our HTMX UI responses.
+     21-Feb-2025   TJM-MCODE  {0016}   0.5.09 - optimized many functions, standardized on '' strings instead of a mix
+                                                of "" and '', now "" only used when embedded ' are needed.
+                                              - fixed an issues in 'logify*()' with string arrays where element had embedded ".
+     08-Mar-2025   TJM-MCODE  {0017}   0.5.10 - updated resx() handle HTTP Status 204 properly with '.end()'.
+     16-Mar-2025   TJM-MCODE  {0018}   0.6.07 - Passing MODULE_NAME is now optional and the logging functions
+                                                all log complete source path and line # of the caller automatically.
+     17-Apr-2025   TJM-MCODE  {0019}   0.6.08 - added 'logifyObject()' to handle all objects, including arrays and JSON.
+     18-Apr-2025   TJM-MCODE  {0020}   0.6.09 - add support for passing 'data' thru 'resx()' to support HTML responses for
+                                                HTMX UI swaps, specifically to support an 'app-banner',
+                                                added 'fatal' severity to align with app-banner.
+     24-Apr-2025   TJM-MCODE  {0021}   0.6.09 - added support for UUID 'Event Id' as optional data to be logged for traceability.
+     03-Oct-2025   TJM-MCODE  {0022}   0.7.00 - added support for HTML output thru the use of a new 'ht' table used in
+                                                combination with the existing 'vt' table.
+     16-Oct-2025   TJM-MCODE  {0023}   0.7.04 - fixed logify() to stop inserting blank line before and between JSON objects.
+                                                Also fixed logObj() to always use logifyObject(), even for simple arrays to
+                                                correct a unique indentation issue.
+     19-Oct-2025   TJM-MCODE  {0024}   0.7.05 - fixed 'getFrom()' to work properly in non-NodeJS environments by checking for 'process.versions.node'.
+
+
+
+
+NOTE: This module follow's MicroCODE's JavaScript Style Guide and Template JS file, see:
+
+      o  https://github.com/MicroCODEIncorporated/JavaScriptSG
+      o  https://github.com/MicroCODEIncorporated/TemplatesJS
+
+...be sure to check out the CTRL-SHIFT+K, +L, +J keybaord shortcuts in Visual Studio Code
+   for taking advance of the #regions in this file and our templates.</div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>Timothy McGuire, MicroCODE, Inc.</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line5">line 5</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Namespaces</h3>
+
+        <dl>
+            <dt><a href="mcode.module__mcode-log.js_-mcode.html">mcode</a></dt>
+            <dd></dd>
+        </dl>
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Type Definitions</h3>
+
+        
+                
+<h4 class="name" id="~resxData">resxData</h4>
+
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>status</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">HTTP Status Code</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Message to log to console / file</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Response data to be send to Frontend/Client/Browser - optionally a HTML component</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>entity</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">[optional] The DB Entity name associated with this Response/Event</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>endpoint</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">[optional] The API Endpoint name associated with this Response/Event</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>error</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">[optional] Any error message associated with this response/event</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>_id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">[optional] The DB Record UUID associated with this Response/Event</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>event_id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">[optional] A unique Event UUID for traceability from UI to LOG.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line1033">line 1033</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="mcode.module__mcode-log.js_.html">'mcode-log.js'</a></li></ul><h3>Namespaces</h3><ul><li><a href="mcode.module__mcode-log.js_-mcode.html">mcode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Wed Nov 05 2025 14:15:12 GMT-0500 (Eastern Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

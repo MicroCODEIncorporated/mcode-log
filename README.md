@@ -272,38 +272,51 @@ It is captured as a UUID v1 in order to be unique across all servers and all tim
 
 These are the functions we want at the ready in any module for development and debug.
 
-| Function           | Description                                                  | Usage                                                                                                     |
-| ------------------ | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
-| **ready**          | Logs 'mcode-log' with version #, mode, and theme.            | mcode.ready()                                                                                             |
-| **vt**             | The definition of standard VT52/100/200 display codes.       | mcode.vt.dim, mcode.vt.bright, mcode.vt.fg.red, mcode.vt.bg.white, etc.                                   |
-| **ht**             | The definition of VT-like HTML inline styles.                | mcode.ht.dim, mcode.ht.bright, mcode.ht.fg.red, mcode.ht.bg.white, etc.                                   |
-| **log**            | Logs a standardized message into the console with objects.   | mcode.log('message' or object, 'module name', 'severity')                                                 |
-| **logHtml**        | Generates standardized HTML for the browser with objects.    | mcode.logHtml('message' or object, 'module name', 'severity')                                             |
-| **logobj**         | Logs an object of any kind into the console with a name.     | mcode.logobj('object name', object, 'module name')                                                        |
-| **logobjHtml**     | Generates standardized HTML for the browser with a name.     | mcode.logobjHtml('object name', object, 'module name')                                                    |
-| **info**           | Short call form of 'mcode.log(msg, src, 'info');             | mcode.info('message' or object, 'module name')                                                            |
-| **warn**           | Short call form of 'mcode.log(msg, src, 'warn');             | mcode.warn('message' or object, 'module name')                                                            |
-| **error**          | Short call form of 'mcode.log(msg, src, 'error');            | mcode.error('message' or object, 'module name')                                                           |
-| **crash**          | Short call form of 'mcode.log(msg, src, 'error');            | mcode.crash('message' or object, 'module name')                                                           |
-| **success**        | Short call form of 'mcode.log(msg, src, 'success');          | mcode.success('message' or object, 'module name')                                                         |
-| **done**           | Short call form of 'mcode.log(msg, src, 'success');          | mcode.done('message' or object, 'module name')                                                            |
-| **debug**          | Short call form of 'mcode.log(msg, src, 'debug');            | mcode.debug('message' or object, 'module name')                                                           |
-| **exp**            | Logs a standardized exception with a collapsible stack dump. | mcode.exp('message' or object, 'module name', 'exp object')                                               |
-| **expHtml**        | Generates standardized HTML for browser with a stack dump.   | mcode.expHtml('message' or object, 'module name', 'exp object')                                           |
-| **expobj**         | Logs standardized exception with an object and stack dump.   | mcode.expobj('object name', object, 'module name', 'exp object')                                          |
-| **expobjHtml**     | Generates standardized HTML with an object and stack dump.   | mcode.expobjHtml('object name', object, 'module name', 'exp object')                                      |
-| **resx**           | Logs a standardized HTTP response and sends the response.    | mcode.resx(res, 'action', {code: 000, message: 'message', data: object, error: 'message'}, 'module name') |
-| **trace**          | Logs a standardized function call with a trace dump.         | mcode.trace('message' or object, 'module name')                                                           |
-| **traceHtml**      | Generates standardized HTML for function call with a trace.  | mcode.traceHtml('message' or object, 'module name')                                                       |
-| **logify**         | Converts a message or JSON into colorized text for log.      | mcode.logify('object or JSON string')                                                                     |
-| **logifyHtml**     | Converts a message or JSON into colorized text for Browser.  | mcode.logifyHtml('object or JSON string')                                                                 |
-| **simplify**       | Strips a string of BRACES, BRACKETS, QUOTES, etc.            | mcode.simplify('object or JSON string')                                                                   |
-| **logifyObject**   | Converts an Object into text appropriate for log.            | mcode.logifyObject('object')                                                                              |
-| **simplifyObject** | Converts an Object to string less BRACES, BRACKETS, etc.     | mcode.simplifyObject('object')                                                                            |
-| **listifyObject**  | Converts an Object of into a HTML or JSX List.               | mcode.listifyObject(object, 'html' or 'jsx');                                                             |
-| **listifyArray**   | Converts an array of text items into a HTML or JSX List.     | mcode.listifyArray(array, 'html' or 'jsx');                                                               |
-| **colorizeLines**  | Prefixes every line of a message with an VT color for log.   | mcode.colorizeLines('message', vt.<color>);                                                               |
-| **timeStamp**      | Returns - YYYY-MMM-DD Day HH:MM:SS.mmm UTC                   | mcode.timeStamp() --> 2024-Jan-22 Mon 15:23:42.790 UTC                                                    |
+| Function               | Description                                                 | Usage                                                                                                     |
+| ---------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| _Debug / Status_       |
+| **ready**              | Logs 'mcode-log' with version #, mode, and theme.           | mcode.ready()                                                                                             |
+| Video Control          |
+| **vt**                 | The definition of standard VT52/100/200 display codes.      | mcode.vt.dim, mcode.vt.bright, mcode.vt.fg.red, mcode.vt.bg.white, etc.                                   |
+| **ht**                 | The definition of VT-like HTML inline styles.               | mcode.ht.dim, mcode.ht.bright, mcode.ht.fg.red, mcode.ht.bg.white, etc.                                   |
+| _Logging to console_   |
+| **log**                | Logs a standardized message into the console with objects.  | mcode.log('message' or object, 'module name', 'severity')                                                 |
+| **logobj**             | Logs an object of any kind into the console with a name.    | mcode.logobj('object name', object, 'module name')                                                        |
+| _Logging to HTML_      |
+| **logHtml**            | Generates standardized HTML for the browser with objects.   | mcode.logHtml('message' or object, 'module name', 'severity')                                             |
+| **logobjHtml**         | Generates standardized HTML for the browser with a name.    | mcode.logobjHtml('object name', object, 'module name')                                                    |
+| _Logging by Severity_  |
+| **warn**               | Short call form of 'mcode.log(msg, src, 'warn');            | mcode.warn('message' or object, 'module name')                                                            |
+| **error**              | Short call form of 'mcode.log(msg, src, 'error');           | mcode.error('message' or object, 'module name')                                                           |
+| **crash**              | Short call form of 'mcode.log(msg, src, 'error');           | mcode.crash('message' or object, 'module name')                                                           |
+| **success**            | Short call form of 'mcode.log(msg, src, 'success');         | mcode.success('message' or object, 'module name')                                                         |
+| **done**               | Short call form of 'mcode.log(msg, src, 'success');         | mcode.done('message' or object, 'module name')                                                            |
+| **debug**              | Short call form of 'mcode.log(msg, src, 'debug');           | mcode.debug('message' or object, 'module name')                                                           |
+| _Logging catch(exp)_   |
+| **expHtml**            | Generates standardized HTML for browser with a stack dump.  | mcode.expHtml('message' or object, 'module name', 'exp object')                                           |
+| **expobj**             | Logs standardized exception with an object and stack dump.  | mcode.expobj('object name', object, 'module name', 'exp object')                                          |
+| **expobjHtml**         | Generates standardized HTML with an object and stack dump.  | mcode.expobjHtml('object name', object, 'module name', 'exp object')                                      |
+| _Logging Call Stack_   |
+| **trace**              | Logs a standardized function call with a trace dump.        | mcode.trace('message' or object, 'module name')                                                           |
+| **traceHtml**          | Generates standardized HTML for function call with a trace. | mcode.traceHtml('message' or object, 'module name')                                                       |
+| _Logging Utilities_    |
+| **logify**             | Converts a message or JSON into colorized text for log.     | mcode.logify('object or JSON string')                                                                     |
+| **logifyHtml**         | Converts a message or JSON into colorized text for Browser. | mcode.logifyHtml('object or JSON string')                                                                 |
+| **simplify**           | Strips a string of BRACES, BRACKETS, QUOTES, etc.           | mcode.simplify('object or JSON string')                                                                   |
+| **logifyObject**       | Converts an Object into text appropriate for log.           | mcode.logifyObject('object')                                                                              |
+| **simplifyObject**     | Converts an Object to string less BRACES, BRACKETS, etc.    | mcode.simplifyObject('object')                                                                            |
+| **listifyObject**      | Converts an Object of into a HTML or JSX List.              | mcode.listifyObject(object, 'html' or 'jsx');                                                             |
+| **listifyArray**       | Converts an array of text items into a HTML or JSX List.    | mcode.listifyArray(array, 'html' or 'jsx');                                                               |
+| **colorizeLines**      | Prefixes every line of a message with an VT color for log.  | mcode.colorizeLines('message', vt.<color>);                                                               |
+| _HTTP Responses_       |
+| **resx**               | Logs a standardized HTTP response and sends the response.   | mcode.resx(res, 'action', {code: 000, message: 'message', data: object, error: 'message'}, 'module name') |
+| _Time Formatting_      |
+| **timeStamp**          | Returns - YYYY-MMM-DD Day HH:MM:SS.mmm UTC                  | mcode.timeStamp() --> 2024-Jan-22 Mon 15:23:42.790 UTC                                                    |
+| **formatUTCTime**      | Formats a timestamp into - HH:MM:SS.mmm UTC                 | mcode.formatUTCTime(Date.now()) --> 15:23:42.790 UTC                                                      |
+| **formatMilitaryTime** | Formats a timestamp into - HH:MM:SS.mmm                     | mcode.formatMilitaryTime(Date.now()) --> 10:23:42.790                                                     |
+| **formatMeridianTime** | Formats a timestamp into - HH:MM:SS.mmm AM/PM               | mcode.formatMeridianTime(Date.now()) --> 10:23:42.790 AM                                                  |
+| **formatTimeByMode**   | Formats a timestamp into specified format                   | mcode.formatTime(Date.now(), mcode.TIME_FORMATS.UTC) --> 15:23:42.790 UTC                                 |
+| **isTimestampInView**  | Checks if a timestamp is LATE, EARLY, VISIBLE, or INVALID   | mcode.isTimestampInView(timestamp, windowMs) --> 'LATE', 'EARLY', 'VISIBLE', or 'INVALID'                 |
 
 ### Documentation
 
@@ -363,6 +376,13 @@ Contributor's names and contact info...
 
 ## Version History
 
+- v0.8.0
+  - Added generic Time formatting functions to support: UTC, Local Military, and Local Meridian time formats.
+  - Added pre-generated JSDocs to the package in ./docs folder for easy reference.
+  - Corrected @example tags in JSDoc headers for 'vt' and 'ht' constants.
+- v0.7.9
+  - Updated log() to propelry colorize the 'message' parameter before logging a following object.
+  - Updated JEST tests to cover colorization of 'message' parameter in log() function
 - v0.7.8
   - Restored the ability to pass 'source' as the 2nd parameter to log() and exp() functions.
     This allows the user to override the automatic source detection via stack traces if desired.

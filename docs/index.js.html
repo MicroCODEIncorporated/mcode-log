@@ -1,5 +1,33 @@
-// #region  F I L E
-// <copyright file="mcode-log/index.js" company="MicroCODE Incorporated">Copyright © 2022-2024 MicroCODE, Inc. Troy, MI</copyright><author>Timothy J. McGuire</author>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: index.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: index.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// #region  F I L E
+// &lt;copyright file="mcode-log/index.js" company="MicroCODE Incorporated">Copyright © 2022-2024 MicroCODE, Inc. Troy, MI&lt;/copyright>&lt;author>Timothy J. McGuire&lt;/author>
 // #region  M O D U L E
 // #region  D O C U M E N T A T I O N
 /**
@@ -116,7 +144,7 @@
 
 const _data = require('mcode-data');
 
-const isNode = typeof process !== 'undefined' && process.versions?.node;
+const isNode = typeof process !== 'undefined' &amp;&amp; process.versions?.node;
 const path = isNode ? require('path') : null;
 const packageJson = require('./package.json');
 
@@ -179,10 +207,10 @@ const mcode = {
         28	    Reveal	conceal off
         29	    Not crossed out
         30–37	Set foreground color -- see color table below
-        38	    Set foreground color -- next arguments are 5;<n> or 2;<r>;<g>;<b>, see below
+        38	    Set foreground color -- next arguments are 5;&lt;n> or 2;&lt;r>;&lt;g>;&lt;b>, see below
         39	    Default foreground color -- implementation defined (according to standard)
         40–47   Set background color -- see color table below
-        48	    Set background color -- next arguments are 5;<n> or 2;<r>;<g>;<b>, see below
+        48	    Set background color -- next arguments are 5;&lt;n> or 2;&lt;r>;&lt;g>;&lt;b>, see below
         49	    Default background color -- implementation defined (according to standard)
         51	    Framed
         52	    Encircled
@@ -302,70 +330,70 @@ const mcode = {
         notice: "This is a test string for HTML-ifying 'mcode' as an object during testing.",
 
         // common effects, HTML inline styles
-        reset: '</span>',
-        bold: '<span style="font-weight: 600;">',
-        bright: '<span style="font-weight: 600;">',
-        dim: '<span style="opacity: 0.6;">',
-        faint: '<span style="opacity: 0.6;">',
-        italic: '<span style="font-style: italic;">',
-        underscore: '<span style="text-decoration: underline;">',
-        underline: '<span style="text-decoration: underline;">',
-        blink: '<span style="animation: blink 1s infinite;">',
-        blink_slow: '<span style="animation: blink 2s infinite;">',
-        blink_fast: '<span style="animation: blink 0.5s infinite;">',
-        reverse: '<span style="filter: invert(1);">',
-        hidden: '<span style="visibility: hidden;">',
-        conceal: '<span style="visibility: hidden;">',
-        strikethru: '<span style="text-decoration: line-through;">',
-        crossed_out: '<span style="text-decoration: line-through;">',
+        reset: '&lt;/span>',
+        bold: '&lt;span style="font-weight: 600;">',
+        bright: '&lt;span style="font-weight: 600;">',
+        dim: '&lt;span style="opacity: 0.6;">',
+        faint: '&lt;span style="opacity: 0.6;">',
+        italic: '&lt;span style="font-style: italic;">',
+        underscore: '&lt;span style="text-decoration: underline;">',
+        underline: '&lt;span style="text-decoration: underline;">',
+        blink: '&lt;span style="animation: blink 1s infinite;">',
+        blink_slow: '&lt;span style="animation: blink 2s infinite;">',
+        blink_fast: '&lt;span style="animation: blink 0.5s infinite;">',
+        reverse: '&lt;span style="filter: invert(1);">',
+        hidden: '&lt;span style="visibility: hidden;">',
+        conceal: '&lt;span style="visibility: hidden;">',
+        strikethru: '&lt;span style="text-decoration: line-through;">',
+        crossed_out: '&lt;span style="text-decoration: line-through;">',
 
         // foreground colors
         fg: {
-            black: '<span style="color: black;">',
-            red: '<span style="color: red;">',
-            green: '<span style="color: green;">',
-            yellow: '<span style="color: yellow;">',
-            blue: '<span style="color: blue;">',
-            magenta: '<span style="color: magenta;">',
-            cyan: '<span style="color: cyan;">',
-            white: '<span style="color: white;">',
+            black: '&lt;span style="color: black;">',
+            red: '&lt;span style="color: red;">',
+            green: '&lt;span style="color: green;">',
+            yellow: '&lt;span style="color: yellow;">',
+            blue: '&lt;span style="color: blue;">',
+            magenta: '&lt;span style="color: magenta;">',
+            cyan: '&lt;span style="color: cyan;">',
+            white: '&lt;span style="color: white;">',
         },
 
         // background colors
         bg: {
-            black: '<span style="background-color: black;">',
-            red: '<span style="background-color: red;">',
-            green: '<span style="background-color: green;">',
-            yellow: '<span style="background-color: yellow;">',
-            blue: '<span style="background-color: blue;">',
-            magenta: '<span style="background-color: magenta;">',
-            cyan: '<span style="background-color: cyan;">',
-            white: '<span style="background-color: white;">',
+            black: '&lt;span style="background-color: black;">',
+            red: '&lt;span style="background-color: red;">',
+            green: '&lt;span style="background-color: green;">',
+            yellow: '&lt;span style="background-color: yellow;">',
+            blue: '&lt;span style="background-color: blue;">',
+            magenta: '&lt;span style="background-color: magenta;">',
+            cyan: '&lt;span style="background-color: cyan;">',
+            white: '&lt;span style="background-color: white;">',
         },
 
         // colors for event severity:            dark                                 light     themes
-        gray: (theme === 'dark') ? '<span style="color: #999999;">' : '<span style="color: #333333;">',  // gray
-        errr: (theme === 'dark') ? '<span style="color: #ff6b6b;">' : '<span style="color: #d32f2f;">',  // red
-        good: (theme === 'dark') ? '<span style="color: #51cf66;">' : '<span style="color: #388e3c;">',  // green
-        warn: (theme === 'dark') ? '<span style="color: #efff3b;">' : '<span style="color: #cbc800;">',  // yellow
-        cold: (theme === 'dark') ? '<span style="color: #339af0;">' : '<span style="color: #1976d2;">',  // blue
-        dead: (theme === 'dark') ? '<span style="color: #e599f7;">' : '<span style="color: #7b1fa2;">',  // magenta
-        code: (theme === 'dark') ? '<span style="color: #3bc9db;">' : '<span style="color: #0097a7;">',  // cyan
-        info: (theme === 'dark') ? '<span style="color: #f8f9fa;">' : '<span style="color: #212529;">',  // white/black
-        dbug: (theme === 'dark') ? '<span style="color: #f2c200;">' : '<span style="color: #f57c00;">',  // orange
+        gray: (theme === 'dark') ? '&lt;span style="color: #999999;">' : '&lt;span style="color: #333333;">',  // gray
+        errr: (theme === 'dark') ? '&lt;span style="color: #ff6b6b;">' : '&lt;span style="color: #d32f2f;">',  // red
+        good: (theme === 'dark') ? '&lt;span style="color: #51cf66;">' : '&lt;span style="color: #388e3c;">',  // green
+        warn: (theme === 'dark') ? '&lt;span style="color: #efff3b;">' : '&lt;span style="color: #cbc800;">',  // yellow
+        cold: (theme === 'dark') ? '&lt;span style="color: #339af0;">' : '&lt;span style="color: #1976d2;">',  // blue
+        dead: (theme === 'dark') ? '&lt;span style="color: #e599f7;">' : '&lt;span style="color: #7b1fa2;">',  // magenta
+        code: (theme === 'dark') ? '&lt;span style="color: #3bc9db;">' : '&lt;span style="color: #0097a7;">',  // cyan
+        info: (theme === 'dark') ? '&lt;span style="color: #f8f9fa;">' : '&lt;span style="color: #212529;">',  // white/black
+        dbug: (theme === 'dark') ? '&lt;span style="color: #f2c200;">' : '&lt;span style="color: #f57c00;">',  // orange
 
         // custom JSON colors -- see 'logifyHtml()' for use
-        punc: '<span style="font-weight: 500; color: #00ffff;">',  // punctuation - CYAN, BOLD
-        key: '<span style="font-weight: 300; color: #f8f9fa;">',  // key name - WHITE
-        string: '<span style="font-weight: 500; color: #00cccc;">',  // string value - CYAN, DARKER
-        integer: '<span style="font-weight: 600; color: #8bd6ffff;">',  // integer value - BLUE
-        real: '<span style="font-weight: 600; color: #a0ff86;">',  // floating point value - GREEN
-        bigint: '<span style="font-weight: 600; color: #cf86ff;">',  // bigint value - MAGENTA
-        true: '<span style="font-weight: 600; color: #00ff00;">',  // boolean true - LIME
-        false: '<span style="font-weight: 600; color: #ff0000;">',  // boolean false - RED
-        null: '<span style="font-weight: 600; color: #7c7c7c;">',  // null value - GRAY
-        value: '<span style="font-weight: 600; color: #ffbf00;">',  // fallback for other values - ORANGE
-        nl: '<br/>'  // newline
+        punc: '&lt;span style="font-weight: 500; color: #00ffff;">',  // punctuation - CYAN, BOLD
+        key: '&lt;span style="font-weight: 300; color: #f8f9fa;">',  // key name - WHITE
+        string: '&lt;span style="font-weight: 500; color: #00cccc;">',  // string value - CYAN, DARKER
+        integer: '&lt;span style="font-weight: 600; color: #8bd6ffff;">',  // integer value - BLUE
+        real: '&lt;span style="font-weight: 600; color: #a0ff86;">',  // floating point value - GREEN
+        bigint: '&lt;span style="font-weight: 600; color: #cf86ff;">',  // bigint value - MAGENTA
+        true: '&lt;span style="font-weight: 600; color: #00ff00;">',  // boolean true - LIME
+        false: '&lt;span style="font-weight: 600; color: #ff0000;">',  // boolean false - RED
+        null: '&lt;span style="font-weight: 600; color: #7c7c7c;">',  // null value - GRAY
+        value: '&lt;span style="font-weight: 600; color: #ffbf00;">',  // fallback for other values - ORANGE
+        nl: '&lt;br/>'  // newline
     },
 
     /**
@@ -437,7 +465,7 @@ const mcode = {
 
         if (typeof source !== 'string' || source.trim() === '') return [appModule, moduleLine];
 
-        // Get <app-base-dir> (3 levels up from <baseDir>/node_modules/mcode-log)
+        // Get &lt;app-base-dir> (3 levels up from &lt;baseDir>/node_modules/mcode-log)
         const baseDir = isNode ? path.resolve(__dirname, '../../..') : '';
         appModule = source.split(/[\.,:;!?\s]+/)[0].toUpperCase();
 
@@ -455,7 +483,7 @@ const mcode = {
             // Fallback for non-V8 engines -- crawl a string stack trace
             const stack = new Error().stack.split('\n');
 
-            for (let i = 2; i < stack.length; i++)
+            for (let i = 2; i &lt; stack.length; i++)
             {
                 if (!stack[i].includes('index.js'))
                 {
@@ -485,7 +513,7 @@ const mcode = {
                 Error.prepareStackTrace = (_, stack) => stack;
                 const stack = new Error().stack;
 
-                if (stack && stack.length > 2)
+                if (stack &amp;&amp; stack.length > 2)
                 {
                     const caller = stack.find((s) => !s.getFileName().includes('index.js'));
 
@@ -529,11 +557,11 @@ const mcode = {
      *      mcode.log('This is a test message.', 'myModule', 'info');
      *      mcode.log('object', object, 'myModule);
      */
-    logHtml: function (message = '<no message>', source = '<unknown>.js', severity = 'debug', error = null, event_id = null)
+    logHtml: function (message = '&lt;no message>', source = '&lt;unknown>.js', severity = 'debug', error = null, event_id = null)
     {
         return mcode.log(message, source, severity, error, event_id, mcode.ht);
     },
-    log: function (message = '<no message>', source = '<unknown>.js', severity = 'debug', error = null, event_id = null, vx = mcode.vt)
+    log: function (message = '&lt;no message>', source = '&lt;unknown>.js', severity = 'debug', error = null, event_id = null, vx = mcode.vt)
     {
         let logText = [];  // build the response as an array for speed
         let status = `${severity}: ${message}`;
@@ -546,14 +574,14 @@ const mcode = {
         if (_data.isObject(source))
         {
             // If event_id looks like a source string (not a UUID), use it as source
-            const evtIsSrc = (typeof event_id === 'string' && !event_id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i));
-            const src = evtIsSrc ? event_id : '<unknown>.js';
+            const evtIsSrc = (typeof event_id === 'string' &amp;&amp; !event_id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i));
+            const src = evtIsSrc ? event_id : '&lt;unknown>.js';
             const evt = !evtIsSrc ? event_id : null;
             return mcode.logobj(message, source, src, severity, evt, vx);
         }
 
         // do not log 'debug' messages in production mode - {0008}
-        if ((severity === 'debug') && (mode === 'production')) return status;
+        if ((severity === 'debug') &amp;&amp; (mode === 'production')) return status;
 
         // flatten the message object to strings for logging...
         if (_data.isArray(message))
@@ -623,7 +651,7 @@ const mcode = {
         {
             // Wrap HTML output in div with severity color
             const codeColor = sevColor.match(/color:\s*([^;"]*)/)?.[1] || '#3bc9db';
-            return `<div style="color: ${codeColor};">${output}</div>`;
+            return `&lt;div style="color: ${codeColor};">${output}&lt;/div>`;
         }
         else
         {
@@ -649,18 +677,18 @@ const mcode = {
      *            mcode.logobj('myObject', myObject, 'myModule');
      *            mcode.obj('myObject', myObject, 'myModule');
      */
-    logobjHtml: function (objName, obj, source = '<undefined>.js', severity = 'info', event_id = null)
+    logobjHtml: function (objName, obj, source = '&lt;undefined>.js', severity = 'info', event_id = null)
     {
         return mcode.logobj(objName, obj, source, severity, event_id, mcode.ht);
     },
-    logobj: function (objName, obj, source = '<undefined>.js', severity = 'info', event_id = null, vx = mcode.vt)
+    logobj: function (objName, obj, source = '&lt;undefined>.js', severity = 'info', event_id = null, vx = mcode.vt)
     {
         let logText = [];  // build the response as an array for speed
         let logifiedMessage = '';
         const [appModule, moduleLine] = this.getFrom(source);
         const {text: sevText, icon: sevIcon, color: sevColor, prefix: sevPrefix} = mcode.resolveSeverity(severity, vx);
 
-        const logObjName = (typeof objName === 'string' && objName.trim() !== '') ? `${sevColor}${objName}:${vx.reset}${vx.nl}` : '';
+        const logObjName = (typeof objName === 'string' &amp;&amp; objName.trim() !== '') ? `${sevColor}${objName}:${vx.reset}${vx.nl}` : '';
 
         // 'Logifiy' all objects passed to this function...
         if (_data.isArray(obj))
@@ -705,7 +733,7 @@ const mcode = {
         {
             // Wrap HTML output in div with severity color using !important to override nested spans
             const codeColor = sevColor.match(/color:\s*([^;"]*)/)?.[1] || '#3bc9db';
-            return `<div style="color: ${codeColor} !important;">${output}</div>`;
+            return `&lt;div style="color: ${codeColor} !important;">${output}&lt;/div>`;
         }
         else
         {
@@ -748,11 +776,11 @@ const mcode = {
      * @param {string} event_id [Optional] a UUID to uniquely tie this logged event back into an error display in the UI.
      * @returns {string} 'message: {message} - exception: {exception}' for display in UI.
      */
-    expHtml: function (message = '<no message>', source = '<unknown>.js', exception = {}, exptrace = {}, event_id = null)
+    expHtml: function (message = '&lt;no message>', source = '&lt;unknown>.js', exception = {}, exptrace = {}, event_id = null)
     {
         return mcode.exp(message, source, exception, exptrace, event_id, mcode.ht);
     },
-    exp: function (message = '<no message>', source = '<unknown>.js', exception = {}, exptrace = {}, event_id = null, vx = mcode.vt)
+    exp: function (message = '&lt;no message>', source = '&lt;unknown>.js', exception = {}, exptrace = {}, event_id = null, vx = mcode.vt)
     {
         let logText = [];  // build the response as an array for speed
         let logifiedMessage = '';
@@ -766,7 +794,7 @@ const mcode = {
         if (!_data.isString(source))
         {
             exception = source;
-            source = '<unknown>.js';
+            source = '&lt;unknown>.js';
         }
 
         if (_data.isJson(message))
@@ -815,7 +843,7 @@ const mcode = {
         const loggedException = ' exception: ' + mcode.colorizeLines(mcode.simplify(logifiedException), vx.dead);
 
         // if 'loggedException' contains a stack trace, log it as an 'exception w/stack'
-        if (loggedException.includes('Error:') && loggedException.includes('at '))
+        if (loggedException.includes('Error:') &amp;&amp; loggedException.includes('at '))
         {
             isExpObject = true;
         }
@@ -842,7 +870,7 @@ const mcode = {
             if (vx === mcode.ht)
             {
                 const codeColor = vx.punc.match(/color:\s*([^;"]*)/)?.[1] || '#3bc9db';
-                return `<div style="color: ${codeColor};">${output}</div>`;
+                return `&lt;div style="color: ${codeColor};">${output}&lt;/div>`;
             }
             else
             {
@@ -872,7 +900,7 @@ const mcode = {
             if (vx === mcode.ht)
             {
                 const codeColor = vx.punc.match(/color:\s*([^;"]*)/)?.[1] || '#3bc9db';
-                return `<div style="color: ${codeColor};">${output}</div>`;
+                return `&lt;div style="color: ${codeColor};">${output}&lt;/div>`;
             }
             else
             {
@@ -898,16 +926,16 @@ const mcode = {
      * @example
      *            mcode.expobj('myObject', myObject, 'myModule', err);  // from within a 'catch (err)' block
      */
-    expobjHtml: function (objName = '<no name>', obj = {}, source = '<unknown>.js', exception = {}, event_id = null)
+    expobjHtml: function (objName = '&lt;no name>', obj = {}, source = '&lt;unknown>.js', exception = {}, event_id = null)
     {
         return mcode.expobj(objName, obj, source, exception, event_id, mcode.ht);
     },
-    expobj: function (objName = '<no name>', obj = {}, source = '<unknown>.js', exception = {}, event_id = null, vx = mcode.vt)
+    expobj: function (objName = '&lt;no name>', obj = {}, source = '&lt;unknown>.js', exception = {}, event_id = null, vx = mcode.vt)
     {
         let logText = [];  // build the response as an array for speed
         let logifiedMessage = '';
         let logifiedException = '';
-        const logObjName = (typeof objName === 'string' && objName.trim() !== '') ? `${objName}:${vx.nl}` : '';
+        const logObjName = (typeof objName === 'string' &amp;&amp; objName.trim() !== '') ? `${objName}:${vx.nl}` : '';
 
         let isExpObject = false;
 
@@ -962,7 +990,7 @@ const mcode = {
         const loggedException = 'exception: ' + mcode.simplify(logifiedException);
 
         // if 'loggedException' contains a stack trace, log it as an 'exception w/stack'
-        if (loggedException.includes('Error:') && loggedException.includes('at '))
+        if (loggedException.includes('Error:') &amp;&amp; loggedException.includes('at '))
         {
             isExpObject = true;
             source = `${sevColor}exception${vx.reset}`;
@@ -990,7 +1018,7 @@ const mcode = {
             if (vx === mcode.ht)
             {
                 const codeColor = vx.punc.match(/color:\s*([^;"]*)/)?.[1] || '#3bc9db';
-                return `<div style="color: ${codeColor};">${output}</div>`;
+                return `&lt;div style="color: ${codeColor};">${output}&lt;/div>`;
             }
             else
             {
@@ -1020,7 +1048,7 @@ const mcode = {
             if (vx === mcode.ht)
             {
                 const codeColor = vx.punc.match(/color:\s*([^;"]*)/)?.[1] || '#3bc9db';
-                return `<div style="color: ${codeColor};">${output}</div>`;
+                return `&lt;div style="color: ${codeColor};">${output}&lt;/div>`;
             }
             else
             {
@@ -1053,16 +1081,16 @@ const mcode = {
      * @param {string} source where the message orginated.
      * @returns {object} the response object.
      */
-    resx: function (res = {}, action = 'none', resxData = {}, source = '<unknown>.js>')
+    resx: function (res = {}, action = 'none', resxData = {}, source = '&lt;unknown>.js>')
     {
         // example   DB Entity: READ [200] OK,  Entity: 'user' _id: nnnn-nnnn-nnnn-nnnn  or  Array: (n)
         // example HTML Result: READ [200] OK,  Endpoint: 'account.settings'
-        const _id = resxData?._id || resxData.data?._id || resxData.data?.id || '<_id?>';
+        const _id = resxData?._id || resxData.data?._id || resxData.data?.id || '&lt;_id?>';
         const count_id = _data.isArray(resxData.data) ? `Array: (${resxData.data.length})` : (_id != '') ? `_id: ${_id}` : ``;
         const event_id = resxData?.event_id || null;
 
         const entity = resxData?.entity;
-        const endpoint = resxData?.endpoint || `<endpoint?>`;
+        const endpoint = resxData?.endpoint || `&lt;endpoint?>`;
         const caller = (entity) ? `Entity: ${entity} ${count_id}` : `Endpoint: ${endpoint}`;
         const status = resxData?.status || 0;
         const message = `${action.toUpperCase()} ${_data.httpStatus(status)},  ${caller}`;
@@ -1136,11 +1164,11 @@ const mcode = {
      * @param {object} vx [Optional] the color video effects to use, defaults to 'mcode.vt' for Console, 'mcode.ht' for HTML.
      * @returns nothing.
      */
-    traceHtml: function (message = '<no message>', source = '<unknown>.js', event_id = null)
+    traceHtml: function (message = '&lt;no message>', source = '&lt;unknown>.js', event_id = null)
     {
         return mcode.trace(message, source, event_id, mcode.ht);
     },
-    trace: function (message = '<no message>', source = '<unknown>.js', event_id = null, vx = mcode.vt)
+    trace: function (message = '&lt;no message>', source = '&lt;unknown>.js', event_id = null, vx = mcode.vt)
     {
         let logText = [];  // build the response as an array for speed
         let logifiedMessage = '';
@@ -1187,7 +1215,7 @@ const mcode = {
         if (vx === mcode.ht)
         {
             const codeColor = vx.punc.match(/color:\s*([^;"]*)/)?.[1] || '#3bc9db';
-            return `<div style="color: ${codeColor};">${output}</div>`;
+            return `&lt;div style="color: ${codeColor};">${output}&lt;/div>`;
         }
         else
         {
@@ -1224,7 +1252,7 @@ const mcode = {
         let c = ' ';
         let clast = ' ';
 
-        for (let i = 0; i < object.length; i++)
+        for (let i = 0; i &lt; object.length; i++)
         {
             clast = c;
             c = object[i];
@@ -1238,7 +1266,7 @@ const mcode = {
             // skip entire escape sequence
             if (inEscape)
             {
-                if (((c >= 'A') && (c <= 'Z')) || ((c >= 'a') && (c <= 'z')))
+                if (((c >= 'A') &amp;&amp; (c &lt;= 'Z')) || ((c >= 'a') &amp;&amp; (c &lt;= 'z')))
                 {
                     inEscape = false;
                 }
@@ -1406,7 +1434,7 @@ const mcode = {
             if (!lineEmpty)
             {
                 newline += `${vx.nl}` + `${vx.reset}`;
-                for (let index = 0; index < tabStop; index++)
+                for (let index = 0; index &lt; tabStop; index++)
                 {
                     newline += '    ';  // 4-space tab-stop
                 }
@@ -1419,13 +1447,13 @@ const mcode = {
         let isKeyChar = (c) =>
         {
             const code = c.charCodeAt(0);
-            return (c !== '"') && (c !== ':') && (code >= 32 && code <= 126);
+            return (c !== '"') &amp;&amp; (c !== ':') &amp;&amp; (code >= 32 &amp;&amp; code &lt;= 126);
         };
 
         // ƒ to check for alpha-numeric characters
         let isValueChar = (c) =>
         {
-            return (c === '-') || (c === '_') || (c === ' ') || (c === '$') || (c === '.') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9');
+            return (c === '-') || (c === '_') || (c === ' ') || (c === '$') || (c === '.') || (c >= 'A' &amp;&amp; c &lt;= 'Z') || (c >= 'a' &amp;&amp; c &lt;= 'z') || (c >= '0' &amp;&amp; c &lt;= '9');
         };
 
         // ƒ to get the appropriate color for a value based on its content
@@ -1468,7 +1496,7 @@ const mcode = {
 
         let cc = '';  // 'cc' - current character, vs. 'c' - temporary character
 
-        for (let i = 0; i < textToLogify.length; i++)
+        for (let i = 0; i &lt; textToLogify.length; i++)
         {
             cc = textToLogify[i];
 
@@ -1481,7 +1509,7 @@ const mcode = {
                 continue;
             }
 
-            if (!inString && textToLogify.substring(i, i + 2) === `\${vt.nl}`)
+            if (!inString &amp;&amp; textToLogify.substring(i, i + 2) === `\${vt.nl}`)
             {
                 logText.push(indent());
                 lineEmpty = false;
@@ -1506,7 +1534,7 @@ const mcode = {
                 continue;
             }
 
-            if (!inString && !inJson && (cc === '{' || cc === '['))
+            if (!inString &amp;&amp; !inJson &amp;&amp; (cc === '{' || cc === '['))
             {
                 inJson = true;
                 --i;  // reprocess '{' or '[' as JSON
@@ -1542,7 +1570,7 @@ const mcode = {
                     for (let j = logText.length - 1; j >= 0; j--)
                     {
                         const char = logText[j];
-                        if (char && char.length === 1 && isValueChar(char))
+                        if (char &amp;&amp; char.length === 1 &amp;&amp; isValueChar(char))
                         {
                             collectedValue = char + collectedValue;
                             valueStartIndex = j;
@@ -1588,7 +1616,7 @@ const mcode = {
                     logText.push(cc);
                     // Add indentation for the next line within the string
                     logText.push(`${vx.reset}`);
-                    for (let index = 0; index < tabStop; index++)
+                    for (let index = 0; index &lt; tabStop; index++)
                     {
                         logText.push('    ');  // 4-space tab-stop to match key indentation
                     }
@@ -1723,7 +1751,7 @@ const mcode = {
         {
             if (actualParentObjects.includes(member))
             {
-                return '"<self-reference>"';  // 'true'
+                return '"&lt;self-reference>"';  // 'true'
             }
             return false;
         };
@@ -1738,7 +1766,7 @@ const mcode = {
             if (typeof value === 'string')
             {
                 // detect JSON objects that have been escaped and convert them back to JSON
-                if (value.startsWith(`{`) && value.endsWith(`}`))
+                if (value.startsWith(`{`) &amp;&amp; value.endsWith(`}`))
                 {
                     // convert to JSON representation
                     return value.replaceAll('\\"', '"');
@@ -1755,7 +1783,7 @@ const mcode = {
             }
             if (typeof value === 'symbol')
             {
-                return '"<symbol>"';
+                return '"&lt;symbol>"';
             }
             if (typeof value === 'bigint')
             {
@@ -1771,15 +1799,15 @@ const mcode = {
             }
             if (typeof value === 'undefined')
             {
-                return '"<undefined>"';
+                return '"&lt;undefined>"';
             }
 
-            return '<unknown>';
+            return '&lt;unknown>';
         };
 
         // ƒ to detect Fetch API Headers, Request, and Response objects
         const isFetchHeaders = (value) =>
-            typeof Headers === 'function' && value instanceof Headers;
+            typeof Headers === 'function' &amp;&amp; value instanceof Headers;
 
         // ƒ to convert Headers to simple object
         const headersToObject = (headers) =>
@@ -1808,11 +1836,11 @@ const mcode = {
 
         // ƒ to detect Fetch API Response objects
         const isFetchResponse = (value) =>
-            typeof Response === 'function' && value instanceof Response;
+            typeof Response === 'function' &amp;&amp; value instanceof Response;
 
         // ƒ to detect Fetch API Request objects
         const isFetchRequest = (value) =>
-            typeof Request === 'function' && value instanceof Request;
+            typeof Request === 'function' &amp;&amp; value instanceof Request;
 
         // ƒ to convert Response to simple object
         const summarizeResponse = (response) =>
@@ -1826,7 +1854,7 @@ const mcode = {
                 url: response.url,
                 bodyUsed: response.bodyUsed,
                 headers: headersToObject(response.headers),
-                body: response.bodyUsed ? '<body consumed>' : '<body available via response.clone()>'
+                body: response.bodyUsed ? '&lt;body consumed>' : '&lt;body available via response.clone()>'
             };
         };
 
@@ -1864,7 +1892,7 @@ const mcode = {
             }
 
             // special case for File objects which cannot be completely stringified
-            if (typeof File !== 'undefined' && currentObject instanceof File)
+            if (typeof File !== 'undefined' &amp;&amp; currentObject instanceof File)
             {
                 let file = currentObject;
                 const date = new Date(file.lastModified);
@@ -1964,22 +1992,22 @@ const mcode = {
 
         if (outputType === 'jsx')
         {
-            listifiedText += '<ul className="list-group">';
+            listifiedText += '&lt;ul className="list-group">';
 
             Object.entries(objectToListify).forEach(([key, value]) =>
             {
                 // ƒ to convert array element to text, simplify for display, and add to LIST...
-                listifiedText += `<li className="list-group-item" key="${keyIndex++}">${key}: ${value}</li>`;
+                listifiedText += `&lt;li className="list-group-item" key="${keyIndex++}">${key}: ${value}&lt;/li>`;
             });
 
-            listifiedText += '</ul>';
+            listifiedText += '&lt;/ul>';
         }
         else
         {
             Object.entries(objectToListify).forEach(([key, value]) =>
             {
                 // ƒ to convert array element to text, simplify for display, and add to LIST...
-                listifiedText += `<li className="list-group-item" key="${keyIndex++}">${key}: ${value}</li>`;
+                listifiedText += `&lt;li className="list-group-item" key="${keyIndex++}">${key}: ${value}&lt;/li>`;
             });
         }
 
@@ -1991,7 +2019,7 @@ const mcode = {
      * @memberof mcode
      * @desc Converts an array of text items into a HTML or JSX List.
      * @api public
-     * @param {Array<any>} arrayToListify the array to be converted to a HTML List.
+     * @param {Array&lt;any>} arrayToListify the array to be converted to a HTML List.
      * @param {string} outputType how to out the list: 'html' or 'jsx'.
      * @returns {string} the HTML List code.
      */
@@ -2002,22 +2030,22 @@ const mcode = {
 
         if (outputType === 'jsx')
         {
-            listText.push(`<ul className="list-group">`);
+            listText.push(`&lt;ul className="list-group">`);
 
             arrayToListify.forEach(element =>
             {
                 // ƒ to convert array element to text, simplify for display, and add to LIST...
-                listText.push(`<li className="list-group-item" key="${keyIndex++}">${mcode.simplifyObject(element)}</li>`);
+                listText.push(`&lt;li className="list-group-item" key="${keyIndex++}">${mcode.simplifyObject(element)}&lt;/li>`);
             });
 
-            listText.push('</ul>');
+            listText.push('&lt;/ul>');
         }
         else
         {
             arrayToListify.forEach(element =>
             {
                 // ƒ to convert array element to text, simplify for display, and add to LIST...
-                listText.push(`<li className="list-group-item" key="${keyIndex++}">${mcode.simplifyObject(element)}</li>`);
+                listText.push(`&lt;li className="list-group-item" key="${keyIndex++}">${mcode.simplifyObject(element)}&lt;/li>`);
             });
         }
 
@@ -2051,7 +2079,7 @@ const mcode = {
 
         // for each line in the array, find the last escape sequence and apply that color to
         // all the lines that follow until a new escape sequence is found at the end of a line {0013}
-        for (let i = 0; i < lineArray?.length; i++)
+        for (let i = 0; i &lt; lineArray?.length; i++)
         {
             // Apply the color to each line
             lineArray[i] = `${currentColor}${lineArray[i]}`;
@@ -2078,7 +2106,7 @@ const mcode = {
         const leadingZeros = (number, length) =>
         {
             let numberField = '' + number;
-            while (numberField.length < length)
+            while (numberField.length &lt; length)
             {
                 numberField = '0' + numberField;
             }
@@ -2276,7 +2304,7 @@ const mcode = {
         const windowStart = currentZuluMs - windowMs;
 
         if (thisTimeMs > currentZuluMs) return 'EARLY'; // timestamp is in the future
-        if (thisTimeMs < windowStart) return 'LATE'; // timestamp is older than time window
+        if (thisTimeMs &lt; windowStart) return 'LATE'; // timestamp is older than time window
 
         return 'VISIBLE'; // timestamp is within acceptable time window
     },
@@ -2305,12 +2333,12 @@ const mcode = {
      */
     function (root, factory)
     {
-        if (typeof define === 'function' && define.amd)
+        if (typeof define === 'function' &amp;&amp; define.amd)
         {
             // AMD. Register as an anonymous module.
             define([], factory);
         }
-        else if (typeof module === 'object' && module.exports)
+        else if (typeof module === 'object' &amp;&amp; module.exports)
         {
             // NODE. Does not work with strict CommonJS, but
             // only CommonJS-like environments that support module.exports, like Node.
@@ -2332,4 +2360,26 @@ const mcode = {
 // #endregion
 
 // #endregion
-// #endregion
+// #endregion</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="mcode.module__mcode-log.js_.html">'mcode-log.js'</a></li></ul><h3>Namespaces</h3><ul><li><a href="mcode.module__mcode-log.js_-mcode.html">mcode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Wed Nov 05 2025 14:15:12 GMT-0500 (Eastern Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
