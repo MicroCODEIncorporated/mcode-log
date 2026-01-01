@@ -576,7 +576,7 @@ const mcode = {
 
         const {text: sevText, icon: sevIcon, color: sevColor, prefix: sevPrefix} = mcode.resolveSeverity(severity, vx);
 
-        logText.push(`${vx.reset}${vx.dim}++${vx.nl}${vx.reset}${vx.dim}`);
+        logText.push(`${vx.reset}${vx.dim}++${vx.nl}`);
         logText.push(`${vx.reset}${vx.dim} ${sevPrefix} ｢mcode｣: ${sevColor}${sevIcon} [${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor, vx)}'`);
         logText.push(`${vx.nl}`);
 
