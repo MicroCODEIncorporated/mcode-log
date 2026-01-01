@@ -376,7 +376,7 @@ Contributor's names and contact info...
 
 ## Version History
 
-- v0.8.1
+- v0.8.2
   - Remove reset video from '++' line of log entries to stop reseting Concurrently process name colorization.
 - v0.8.0
   - Added generic Time formatting functions to support: UTC, Local Military, and Local Meridian time formats.

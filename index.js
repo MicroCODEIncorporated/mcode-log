@@ -576,9 +576,9 @@ const mcode = {
 
         const {text: sevText, icon: sevIcon, color: sevColor, prefix: sevPrefix} = mcode.resolveSeverity(severity, vx);
 
-        logText.push(`${vx.reset}${vx.dim}++${vx.nl}`);
+        logText.push(`${vx.reset}${vx.dim}++${vx.reset}${vx.nl}`);
         logText.push(`${vx.reset}${vx.dim} ${sevPrefix} ｢mcode｣: ${sevColor}${sevIcon} [${appModule}] '${mcode.colorizeLines(logifiedMessage, sevColor, vx)}'`);
-        logText.push(`${vx.nl}`);
+        logText.push(`${vx.reset}${vx.nl}`);
 
         let logifiedError = false;
         if (error)
@@ -602,7 +602,7 @@ const mcode = {
         {
             logifiedError = mcode.colorizeLines(logifiedError, sevColor, vx);
 
-            logText.push(`${vx.reset}${vx.dim}     error: ${vx.reset}${sevColor}${logifiedError}${vx.nl}`);
+            logText.push(`${vx.reset}${vx.dim}     error: ${vx.reset}${sevColor}${logifiedError}${vx.reset}${vx.nl}`);
         }
         if (event_id)
         {
@@ -683,8 +683,8 @@ const mcode = {
         // Apply severity color to the entire message
         logifiedMessage = mcode.colorizeLines(logifiedMessage, sevColor, vx);
 
-        logText.push(`${vx.reset}${vx.dim}++${vx.nl}`);
-        logText.push(`${vx.reset}${vx.dim} ${sevPrefix} ｢mcode｣: ${sevColor}${sevIcon} [${appModule}] '${logifiedMessage}'${vx.nl}`);
+        logText.push(`${vx.reset}${vx.dim}++${vx.reset}${vx.nl}`);
+        logText.push(`${vx.reset}${vx.dim} ${sevPrefix} ｢mcode｣: ${sevColor}${sevIcon} [${appModule}] '${logifiedMessage}'${vx.reset}${vx.nl}`);
 
         if (event_id)
         {
@@ -822,10 +822,10 @@ const mcode = {
 
         if (isExpObject)
         {
-            logText.push(`${vx.reset}${vx.dim}++${vx.nl}`);
-            logText.push(`${vx.reset}${vx.dim} * ｢mcode｣: ${sevColor}💀 [${appModule}] '${logifiedMessage}'${vx.nl}`);
-            logText.push(`${vx.reset}${vx.dim}${sevColor} exception:${vx.nl}`);
-            logText.push(logifiedException + `${vx.nl}`);
+            logText.push(`${vx.reset}${vx.dim}++${vx.reset}${vx.nl}`);
+            logText.push(`${vx.reset}${vx.dim} * ｢mcode｣: ${sevColor}💀 [${appModule}] '${logifiedMessage}'${vx.reset}${vx.nl}`);
+            logText.push(`${vx.reset}${vx.dim}${sevColor} exception:${vx.reset}${vx.nl}`);
+            logText.push(logifiedException + `${vx.reset}${vx.nl}`);
             if (event_id)
             {
                 const uuidInfo = _data.uuidDecode(event_id);  // see mcode.data package
@@ -852,10 +852,10 @@ const mcode = {
         }
         else
         {
-            logText.push(`${vx.reset}${vx.dim}++${vx.nl}`);
-            logText.push(`${vx.reset}${vx.dim} * ｢mcode｣: ${sevColor}💀 [${appModule}] '${logifiedMessage}'${vx.nl}`);
-            logText.push(`${vx.reset}${vx.dim}${sevColor}${loggedException}${vx.gray}${vx.nl}`);
-            logText.push(mcode.colorizeLines(`call stack: ${new Error().stack}${vx.nl}`, vx.gray));
+            logText.push(`${vx.reset}${vx.dim}++${vx.reset}${vx.nl}`);
+            logText.push(`${vx.reset}${vx.dim} * ｢mcode｣: ${sevColor}💀 [${appModule}] '${logifiedMessage}'${vx.reset}${vx.nl}`);
+            logText.push(`${vx.reset}${vx.dim}${sevColor}${loggedException}${vx.gray}${vx.reset}${vx.nl}`);
+            logText.push(mcode.colorizeLines(`call stack: ${new Error().stack}${vx.reset}${vx.nl}`, vx.gray));
             if (event_id)
             {
                 const uuidInfo = _data.uuidDecode(event_id);  // see mcode.data package
@@ -970,10 +970,10 @@ const mcode = {
 
         if (isExpObject)
         {
-            logText.push(`${vx.reset}${vx.dim}++${vx.nl}`);
-            logText.push(`${vx.reset}${vx.dim} * ｢mcode｣: ${sevColor}💀 [${appModule}] '${logifiedMessage}'${vx.nl}`);
-            logText.push(`${vx.reset}${vx.dim}${sevColor}exception:${vx.nl}`);
-            logText.push(`${vx.reset}` + logifiedException + `${vx.nl}`);
+            logText.push(`${vx.reset}${vx.dim}++${vx.reset}${vx.nl}`);
+            logText.push(`${vx.reset}${vx.dim} * ｢mcode｣: ${sevColor}💀 [${appModule}] '${logifiedMessage}'${vx.reset}${vx.nl}`);
+            logText.push(`${vx.reset}${vx.dim}${sevColor}exception:${vx.reset}${vx.nl}`);
+            logText.push(`${vx.reset}` + logifiedException + `${vx.reset}${vx.nl}`);
             if (event_id)
             {
                 const uuidInfo = _data.uuidDecode(event_id);  // see mcode.data package
@@ -1000,10 +1000,10 @@ const mcode = {
         }
         else
         {
-            logText.push(`${vx.reset}${vx.dim}++${vx.nl}`);
-            logText.push(`${vx.reset}${vx.dim} * ｢mcode｣: ${sevColor}💀 [${appModule}] '${logifiedMessage}'${vx.nl}`);
-            logText.push(`${vx.reset}${vx.dim}${sevColor}${loggedException}${vx.gray}${vx.nl}`);
-            logText.push(mcode.colorizeLines(`call stack: ${new Error().stack}${vx.nl}`, vx.gray));
+            logText.push(`${vx.reset}${vx.dim}++${vx.reset}${vx.nl}`);
+            logText.push(`${vx.reset}${vx.dim} * ｢mcode｣: ${sevColor}💀 [${appModule}] '${logifiedMessage}'${vx.reset}${vx.nl}`);
+            logText.push(`${vx.reset}${vx.dim}${sevColor}${loggedException}${vx.gray}${vx.reset}${vx.nl}`);
+            logText.push(mcode.colorizeLines(`call stack: ${new Error().stack}${vx.reset}${vx.nl}`, vx.gray));
             if (event_id)
             {
                 const uuidInfo = _data.uuidDecode(event_id);  // see mcode.data package
@@ -1168,9 +1168,9 @@ const mcode = {
         let sevColor = vx.reset + vx.punc;
 
         // Function calls are always logged as 'Info'
-        logText.push(`${vx.reset}${vx.dim}++${vx.nl}`);
-        logText.push(`${vx.reset}${vx.dim} µ ｢mcode｣: ${sevColor}🔍 [${appModule}] '${logifiedMessage}'${vx.reset}${vx.gray}${vx.nl}`);
-        logText.push(mcode.colorizeLines(`call stack: ${new Error().stack}${vx.nl}`, vx.gray));
+        logText.push(`${vx.reset}${vx.dim}++${vx.reset}${vx.nl}`);
+        logText.push(`${vx.reset}${vx.dim} µ ｢mcode｣: ${sevColor}🔍 [${appModule}] '${logifiedMessage}'${vx.reset}${vx.gray}${vx.reset}${vx.nl}`);
+        logText.push(mcode.colorizeLines(`call stack: ${new Error().stack}${vx.reset}${vx.nl}`, vx.gray));
         if (event_id)
         {
             const uuidInfo = _data.uuidDecode(event_id);  // see mcode.data package
