@@ -376,6 +376,8 @@ Contributor's names and contact info...
 
 ## Version History
 
+- v0.8.3
+  - Correct GUID logging by tightening up detection of JSON objects.
 - v0.8.2
   - Remove reset video from '++' line of log entries to stop reseting Concurrently process name colorization.
 - v0.8.0

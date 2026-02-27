@@ -1737,8 +1737,9 @@ const mcode = {
             }
             if (typeof value === 'string')
             {
-                // detect JSON objects that have been escaped and convert them back to JSON
-                if (value.startsWith(`{`) && value.endsWith(`}`))
+                // detect JSON objects that have been escaped and convert them back to JSON.
+                // must contain ":" (key-value pattern) to avoid treating GUIDs like {uuid} as JSON.
+                if (value.startsWith(`{`) && value.endsWith(`}`) && value.includes(`":`))
                 {
                     // convert to JSON representation
                     return value.replaceAll('\\"', '"');

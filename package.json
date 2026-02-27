@@ -1,6 +1,6 @@
 {
     "name": "mcode-log",
-    "version": "0.8.2",
+    "version": "0.8.3",
     "description": "A stand-alone package of core code for logging and debugging.",
     "main": "index.js",
     "scripts": {
