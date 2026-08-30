@@ -376,6 +376,11 @@ Contributor's names and contact info...
 
 ## Version History
 
+- v0.8.5
+  - Moved the color of REAL numbers into the blue-purple hue line of 'INTEGER' and 'BIGINT' away from the green line used for 'TRUE'.
+- v0.8.4
+  - Flipped DEBUG logging block from == 'production' to != 'development' to stop excessive logging in cloud based 'alpha' and 'beta' environments.
+    We were hitting RAILWAY logging limits while in 'beta' testing, not the intention of mcode.debug().
 - v0.8.3
   - Correct GUID logging by tightening up detection of JSON objects.
 - v0.8.2

@@ -261,7 +261,7 @@ const mcode = {
         key: '\x1b[97m',  // key name - WHITE
         string: '\x1b[96m',  // string value - CYAN
         integer: '\x1b[94m',  // integer value - BLUE
-        real: '\x1b[92m',  // floating point value - GREEN
+        real: '\x1b[38;5;147m',  // floating point value - BLUE-PURPLE (#afafff)
         bigint: '\x1b[95m',  // bigint value - MAGENTA
         true: '\x1b[92m',  // boolean true - BRIGHT GREEN (LIME)
         false: '\x1b[91m',  // boolean false - RED
@@ -359,7 +359,7 @@ const mcode = {
         key: '<span style="font-weight: 300; color: #f8f9fa;">',  // key name - WHITE
         string: '<span style="font-weight: 500; color: #00cccc;">',  // string value - CYAN, DARKER
         integer: '<span style="font-weight: 600; color: #8bd6ffff;">',  // integer value - BLUE
-        real: '<span style="font-weight: 600; color: #a0ff86;">',  // floating point value - GREEN
+        real: '<span style="font-weight: 600; color: #afafff;">',  // floating point value - BLUE-PURPLE
         bigint: '<span style="font-weight: 600; color: #cf86ff;">',  // bigint value - MAGENTA
         true: '<span style="font-weight: 600; color: #00ff00;">',  // boolean true - LIME
         false: '<span style="font-weight: 600; color: #ff0000;">',  // boolean false - RED
@@ -552,8 +552,8 @@ const mcode = {
             return mcode.logobj(message, source, src, severity, evt, vx);
         }
 
-        // do not log 'debug' messages in production mode - {0008}
-        if ((severity === 'debug') && (mode === 'production')) return status;
+        // only log 'debug' messages in development mode - {0008}
+        if ((severity === 'debug') && (mode !== 'development')) return status;
 
         // flatten the message object to strings for logging...
         if (_data.isArray(message))

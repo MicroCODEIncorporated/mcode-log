@@ -995,8 +995,8 @@ describe('mcode.html', () =>
                 // Test integer colors (blue in VT)
                 expect(logOutput).toContain('\x1b[94m42'); // blue integer
 
-                // Test real/float colors (green in VT)
-                expect(logOutput).toContain('\x1b[92m3.14'); // green real
+                // Test real/float colors (blue-purple in VT)
+                expect(logOutput).toContain('\x1b[38;5;147m3.14'); // blue-purple real
 
                 // Test boolean colors
                 expect(logOutput).toContain('\x1b[92mtrue'); // lime true
@@ -1163,7 +1163,7 @@ describe('mcode.html', () =>
 
                 // Check individual element colors (should match data type colors)
                 expect(logOutput).toContain('\x1b[94m42'); // blue integer
-                expect(logOutput).toContain('\x1b[92m3.14'); // green real
+                expect(logOutput).toContain('\x1b[38;5;147m3.14'); // blue-purple real
                 expect(logOutput).toContain('\x1b[96m"string"'); // cyan string
                 expect(logOutput).toContain('\x1b[92mtrue'); // lime true
                 expect(logOutput).toContain('\x1b[91mfalse'); // red false
@@ -1229,8 +1229,8 @@ describe('mcode.html', () =>
                 // Test integer colors (blue in HTML)
                 expect(htmlResult).toContain('<span style="font-weight: 600; color: #8bd6ffff;">42'); // blue integer
 
-                // Test real/float colors (green in HTML)
-                expect(htmlResult).toContain('<span style="font-weight: 600; color: #a0ff86;">3.14'); // green real
+                // Test real/float colors (blue-purple in HTML)
+                expect(htmlResult).toContain('<span style="font-weight: 600; color: #afafff;">3.14'); // blue-purple real
 
                 // Test boolean colors
                 expect(htmlResult).toContain('<span style="font-weight: 600; color: #00ff00;">true'); // lime true
@@ -1297,7 +1297,7 @@ describe('mcode.html', () =>
                 const logOutput = consoleSpy.mock.calls.join('');
 
                 expect(logOutput).toContain('\x1b[94m-42'); // blue negative integer
-                expect(logOutput).toContain('\x1b[92m-3.14'); // green negative float
+                expect(logOutput).toContain('\x1b[38;5;147m-3.14'); // blue-purple negative float
             });
 
             it('should handle scientific notation', () =>
@@ -1311,8 +1311,8 @@ describe('mcode.html', () =>
 
                 const logOutput = consoleSpy.mock.calls.join('');
 
-                // Scientific notation should be treated as real numbers (green)
-                expect(logOutput).toContain('\x1b[92m'); // Should contain green color for reals
+                // Scientific notation should be treated as real numbers (blue-purple)
+                expect(logOutput).toContain('\x1b[38;5;147m'); // Should contain blue-purple color for reals
             });
 
             it('should handle empty arrays and objects', () =>
@@ -1386,8 +1386,8 @@ describe('mcode.html', () =>
                 expect(htmlOutput).toContain('<span style="font-weight: 600; color: #8bd6ffff;">123'); // HTML blue
 
                 // Float consistency
-                expect(vtOutput).toContain('\x1b[92m45.67'); // VT green
-                expect(htmlOutput).toContain('<span style="font-weight: 600; color: #a0ff86;">45.67'); // HTML green
+                expect(vtOutput).toContain('\x1b[38;5;147m45.67'); // VT blue-purple
+                expect(htmlOutput).toContain('<span style="font-weight: 600; color: #afafff;">45.67'); // HTML blue-purple
 
                 // Boolean true consistency
                 expect(vtOutput).toContain('\x1b[92mtrue'); // VT lime
